@@ -21,4 +21,52 @@ Look at all these crazy features!
 
 ## Installation
 
+1) Grab latest source
+<pre>
+git clone git@github.com:RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git 
+</pre>
 
+2) Navigate to folder and create new Heroku Cedar app
+<pre>
+heroku create --stack cedar
+</pre>
+
+3) Configure app for your Twilio account 
+<pre>
+heroku config:add TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxx
+heroku config:add TWILIO_AUTH_TOKEN=yyyyyyyyyyyyyyyyy
+heroku config:add TWILIO_APP_SID=APzzzzzzzzzzzzzzzzzz
+heroku config:add TWILIO_CALLER_ID=+15556667777
+</pre>
+
+4) Deploy to Heroku
+<pre>
+git push heroku master
+</pre>
+
+5) Scale your dynos
+<pre>
+heroku scale web=1
+</pre>
+
+6) Visit the home page of your new Heroku app to see your newly configured app!
+
+
+## Testing
+
+This hackpack comes with a full testing suite ready for nose.
+
+<pre>
+nosetests -v tests/
+</pre>
+
+Check out the TwiMLTest base class in test_twilio.py for some utilities to help
+test your Twilio apps.
+
+
+## Meta 
+
+* No warranty expressed or implied.  Software is as is.
+* MIT License
+* Lovingly crafted by [Twilio New
+ York](http://www.meetup.com/Twilio/New-York-NY/) 

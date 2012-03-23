@@ -44,7 +44,7 @@ class TwiMLTest(unittest.TestCase):
         return self.app.post(path, data=params)
 
 
-class TestSms(TwiMLTest):
+class ExampleTests(TwiMLTest):
     def test_sms(self):
         response = self.sms("Test")
         self.assertTwiML(response)

@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Client{% endblock %}
+
+{% block head %}
+<link href="http://static0.twilio.com/packages/quickstart/client.css"
+  type="text/css" rel="stylesheet" />
+{% if not configuration_error %}
+<script type="text/javascript"
+  src="http://static.twilio.com/libs/twiliojs/1.0/twilio.min.js"></script>
+<script type="text/javascript"
+  src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
+</script>
+<script type="text/javascript">
+
+  Twilio.Device.setup("{{ token }}");
+
+  Twilio.Device.ready(function (device) {
+    $("#log").text("Ready");
+  });
+
+  Twilio.Device.error(function (error) {
+    $("#log").text("Error: " + error.message);
+  });
+
+  Twilio.Device.connect(function (conn) {
+    $("#log").text("Successfully established call");
+  });
+
+  Twilio.Device.disconnect(function (conn) {
+    $("#log").text("Call ended");
+  });
+
+  Twilio.Device.incoming(function (conn) {
+    $("#log").text("Incoming connection from " + conn.parameters.From);
+    // accept the incoming connection and start two-way audio
+    conn.accept();
+  });
+
+  function call() {
+    // get the phone number to connect the call to
+    Twilio.Device.connect();
+  }
+
+  function hangup() {
+    Twilio.Device.disconnectAll();
+  }
+</script>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<button class="call" onclick="call();">
+  Call
+</button>
+
+<button class="hangup" onclick="hangup();">
+  Hangup
+</button>
+<div id="log">
+{% if configuration_error %}
+{{ configuration_error }}
+{% else %} 
+Loading pigeons...
+{% endif %}
+</div>
+{% endblock %}

@@ -19,6 +19,47 @@ Look at all these crazy features!
 * PEP8 - It's good for you!
 
 
+## Usage
+
+This hackpack ships with two ready-to-go endpoints for your Twilio Voice and SMS
+apps.  The two routes /voice and /sms contain two examples you can modify
+easily.
+
+For example, here is a quick Twilio Voice app that plays some Ramones.
+
+```python
+@app.route('/voice', methods=['POST'])
+def voice():
+    response = twiml.Response()
+    response.play("http://example.com/music/ramones.mp3")
+    return str(response)
+```
+
+SMS apps are similarly easy.
+
+```python
+@app.route('/sms', methods=['POST'])
+def sms():
+    response = twiml.Response()
+    response.sms("The Ramones are great!")
+    return str(response)
+```
+
+These apps can get interactive pretty quickly.  For example, let's make an SMS
+app that responds with "Best band ever" when you text RAMONES.
+
+```python
+@app.route('/sms', methods=['POST'])
+def sms():
+    response = twiml.Response()
+    body = request.form['Body']
+    if "RAMONES" in body:
+        response.sms("Best band ever.")
+    else:
+        response.sms("Not the best band ever.")
+    return str(response)
+```
+
 ## Installation
 
 1) Grab latest source
@@ -57,11 +98,26 @@ heroku scale web=1
 This hackpack comes with a full testing suite ready for nose.
 
 <pre>
-nosetests -v tests/
+nosetests -v tests
 </pre>
 
-Check out the TwiMLTest base class in test_twilio.py for some utilities to help
-test your Twilio apps.
+It also ships with an easy-to-use base class for testing your
+[TwiML](http://www.twilio.com/docs/api/twiml).  For example, testing a basic SMS
+response is only two lines of code:
+
+```python
+class ExampleTest(TwiMLTest):
+    response = self.sms("Test")
+    self.assertTwiML(response)
+```
+
+You can also test your Gather verbs for voice apps very easily.
+
+```python
+class ExampleTest(TwiMLTest):
+    response = self.call(digits="1")
+    self.assertTwiML(response)
+```
 
 
 ## Meta 

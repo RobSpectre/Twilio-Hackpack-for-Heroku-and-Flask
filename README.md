@@ -66,7 +66,7 @@ test your Twilio apps.
 
 ## Meta 
 
-* No warranty expressed or implied.  Software is as is.
-* MIT License
+* No warranty expressed or implied.  Software is as is. Diggity.
+* [MIT License](http://www.opensource.org/licenses/mit-license.html)
 * Lovingly crafted by [Twilio New
  York](http://www.meetup.com/Twilio/New-York-NY/) 

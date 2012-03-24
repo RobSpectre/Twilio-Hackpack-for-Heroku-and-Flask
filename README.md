@@ -130,7 +130,9 @@ It also ships with an easy-to-use base class for testing your
 response is only two lines of code:
 
 ```python
-class ExampleTest(TwiMLTest):
+import test_twilio
+
+class ExampleTest(test_twilio.TwiMLTest):
     response = self.sms("Test")
     self.assertTwiML(response)
 ```
@@ -139,7 +141,9 @@ You can also test your [Gather
 verbs](http://www.twilio.com/docs/api/twiml/gather) for voice apps very easily.
 
 ```python
-class ExampleTest(TwiMLTest):
+import test_twilio
+
+class ExampleTest(test_twilio.TwiMLTest):
     response = self.call(digits="1")
     self.assertTwiML(response)
 ```

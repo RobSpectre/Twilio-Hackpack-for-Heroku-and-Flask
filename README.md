@@ -115,7 +115,9 @@ heroku scale web=1
 </pre>
 
 6) Visit the home page of your new Heroku app to see your newly configured app!
-
+<pre>
+heroku open
+</pre>
 
 ## Testing
 

@@ -64,7 +64,7 @@ def sms():
 
 1) Grab latest source
 <pre>
-git clone git@github.com:RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git 
+git clone git://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git 
 </pre>
 
 2) Navigate to folder and create new Heroku Cedar app

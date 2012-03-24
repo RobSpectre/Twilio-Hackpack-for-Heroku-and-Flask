@@ -60,6 +60,30 @@ def sms():
     return str(response)
 ```
 
+You can apply this same concept to
+[Gathering](http://www.twilio.com/docs/api/twiml/gather) user input on Twilio
+Voice.  Here we will Gather the user input with one route and then handle the
+user input with another.
+
+```python
+@app.route('/voice', methods=['POST'])
+def voice():
+    response = twiml.Response()
+    with response.gather(numDigits=1, action="/gather") as gather:
+        gather.say("Press 1 to indicate The Ramones are the best band ever.")
+    return str(response)
+
+@app.route('/gather', methods=['POST'])
+def gather():
+    response = twiml.Response()
+    digits = request.form['Digits']
+    if digits == "1":
+        response.say("You are correct.  The Ramones are the best.")
+    else:
+        response.say("You are wrong.  Never call me again.")
+    return str(response)
+```
+
 ## Installation
 
 1) Grab latest source
@@ -111,7 +135,8 @@ class ExampleTest(TwiMLTest):
     self.assertTwiML(response)
 ```
 
-You can also test your Gather verbs for voice apps very easily.
+You can also test your [Gather
+verbs](http://www.twilio.com/docs/api/twiml/gather) for voice apps very easily.
 
 ```python
 class ExampleTest(TwiMLTest):

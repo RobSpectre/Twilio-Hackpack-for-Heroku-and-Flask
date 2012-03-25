@@ -1,4 +1,5 @@
 import os
+import signal
 
 from flask import Flask
 from flask import render_template
@@ -62,6 +63,13 @@ def index():
         'sms_request_url': url_for('.sms', _external=True),
         'client_url': url_for('.client', _external=True)}
     return render_template('index.html', params=params)
+
+# Handles SIGTERM so that we don't get an error when Heroku wants or needs to restart the dyno
+def graceful_shutdown(signum, frame):
+    print "Rob Spectre is always graceful. So there."
+    exit()
+
+signal.signal(signal.SIGTERM, graceful_shutdown)
 
 
 # If PORT not specified by environment, assume development config.

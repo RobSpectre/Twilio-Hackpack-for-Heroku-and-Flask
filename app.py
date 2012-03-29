@@ -64,7 +64,9 @@ def index():
         'client_url': url_for('.client', _external=True)}
     return render_template('index.html', params=params)
 
-# Handles SIGTERM so that we don't get an error when Heroku wants or needs to restart the dyno
+
+# Handles SIGTERM so that we don't get an error when Heroku wants or needs to
+# restart the dyno
 def graceful_shutdown(signum, frame):
     exit()
 

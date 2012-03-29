@@ -151,9 +151,27 @@ class ExampleTest(test_twilio.TwiMLTest):
 ```
 
 
+## Branches
+
+Two configurations are available in different branches:
+
+* master - Default dev mode with minimum possible code to get going.
+* production - Intended for live use with more code and dependencies appropriate
+  to a production environment.
+
+
 ## Meta 
 
 * No warranty expressed or implied.  Software is as is. Diggity.
 * [MIT License](http://www.opensource.org/licenses/mit-license.html)
 * Lovingly crafted by [Twilio New
  York](http://www.meetup.com/Twilio/New-York-NY/) 
+
+
+## Community Contributors
+
+Here we recognize crack members of the Twilio community who worked on this
+hackpack.
+
+* [Timothée Boucher](http://www.timotheeboucher.com/) - idea for production
+  branch

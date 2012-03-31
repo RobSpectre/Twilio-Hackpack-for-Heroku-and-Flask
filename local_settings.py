@@ -1,10 +1,8 @@
 '''
 Configuration Settings
-
-Includes credentials for Twilio.  Second stanza intended for Heroku deployment.
 '''
 
-''' Uncomment to configure in in file.  
+''' Uncomment to configure using the file.  
 WARNING: Be careful not to post your account credentials on GitHub.
 
 ACCOUNT_SID = "ACxxxxxxxxxxxxx" 

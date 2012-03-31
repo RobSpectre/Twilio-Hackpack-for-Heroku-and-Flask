@@ -86,6 +86,10 @@ def gather():
 
 ## Installation
 
+Step-by-step on how to install and configure this hackpack.
+
+### Basic Install
+
 1) Grab latest source
 <pre>
 git clone git://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git 
@@ -96,7 +100,54 @@ git clone git://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git
 heroku create --stack cedar
 </pre>
 
-3) Configure app for your Twilio account 
+3) Deploy to Heroku
+<pre>
+git push heroku master
+</pre>
+
+4) Scale your dynos
+<pre>
+heroku scale web=1
+</pre>
+
+5) Visit the home page of your new Heroku app to see your newly configured app!
+<pre>
+heroku open
+</pre>
+
+### Configuration
+
+Want to use the built-in Twilio Client template?  Configure your app with two
+easy options.
+
+#### local_settings.py
+
+local_settings.py is a file available in the hackpack route for you to configure
+your twilio account credentials manually.  Be sure not to expose your Twilio
+account to a public repo, however.
+
+```python
+ACCOUNT_SID = "ACxxxxxxxxxxxxx" 
+AUTH_TOKEN = "yyyyyyyyyyyyyyyy"
+TWILIO_APP_SID = "APzzzzzzzzz"
+TWILIO_CALLER_ID = "+17778889999"
+```
+
+#### Environment Variables
+
+The canonical approach for Heroku apps. This method is slightly more complex
+than configuring in local_settings.py, but better for you, and therefore (of
+course) the world.
+
+1) Set environment variables locally.
+<pre>
+export TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxx
+export TWILIO_AUTH_TOKEN=yyyyyyyyyyyyyyyyy
+export TWILIO_APP_SID=APzzzzzzzzzzzzzzzzzz
+export TWILIO_CALLER_ID=+15556667777
+</pre>
+
+2) Set environment variables for Heroku app.
 <pre>
 heroku config:add TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxx
 heroku config:add TWILIO_AUTH_TOKEN=yyyyyyyyyyyyyyyyy
@@ -104,20 +155,6 @@ heroku config:add TWILIO_APP_SID=APzzzzzzzzzzzzzzzzzz
 heroku config:add TWILIO_CALLER_ID=+15556667777
 </pre>
 
-4) Deploy to Heroku
-<pre>
-git push heroku master
-</pre>
-
-5) Scale your dynos
-<pre>
-heroku scale web=1
-</pre>
-
-6) Visit the home page of your new Heroku app to see your newly configured app!
-<pre>
-heroku open
-</pre>
 
 ## Testing
 
@@ -157,7 +194,13 @@ Two configurations are available in different branches:
 
 * master - Default dev mode with minimum possible code to get going.
 * production - Intended for live use with more code and dependencies appropriate
-  to a production environment.
+  to a production environment. To deploy this branch instead, adjust your
+  procedure for the production branch:
+
+<pre>
+git checkout production
+git push heroku production:master
+</pre>
 
 
 ## Meta 

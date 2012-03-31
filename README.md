@@ -3,6 +3,10 @@
 An easy-to-use repo to kickstart your Twilio app using Flask and deploy onto
 Heroku.  Easy to clone, easy to tweak, easy to deploy.
 
+[![Build
+Status](https://secure.travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.png)]
+(http://travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
+
 
 ## Features
 

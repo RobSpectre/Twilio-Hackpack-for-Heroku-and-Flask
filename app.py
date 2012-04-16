@@ -17,7 +17,7 @@ app.config.from_pyfile('local_settings.py')
 
 
 # Voice Request URL
-@app.route('/voice', methods=['POST'])
+@app.route('/voice', methods=['GET', 'POST'])
 def voice():
     response = twiml.Response()
     response.say("Congratulations! You deployed the Twilio Hackpack" \
@@ -26,7 +26,7 @@ def voice():
 
 
 # SMS Request URL
-@app.route('/sms', methods=['POST'])
+@app.route('/sms', methods=['GET', 'POST'])
 def sms():
     response = twiml.Response()
     response.sms("Congratulation! You deployed the Twilio Hackpack" \

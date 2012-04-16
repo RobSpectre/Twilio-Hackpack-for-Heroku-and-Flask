@@ -4,41 +4,51 @@
 
 {% block head %}
 <link rel="stylesheet" type="text/css"
-href="http://static1.twilio.com/packages/base.css?b06713f21762cacdebd4f02020e12944"
-/>
+    href="http://static1.twilio.com/packages/base.css"/>
 <link rel="stylesheet" type="text/css"
-href="http://static0.twilio.com/packages/buttons.css?e27a601383acc6a104994f6378db1987"
-/>
+    href="http://static0.twilio.com/packages/buttons.css" />
 <link rel="stylesheet" type="text/css"
-href="http://static0.twilio.com/packages/twilio-conference.css?75cf120b62b23c8efe22ec1550c0b271"
-/>
+    href="/static/styles/index.css" />
 {% endblock %}
 
 {% block content %}
-<div id="twiliocon-2012" class="twiliocon-wrapper">
-    <div id="twiliocon-2012-header">
-        <h1 class="section-heading"><span class="logo">Twilio</span>
-            Success!</h1>
-    </div>
-
-    <div id="twiliocon-2012-content">
-        <h2 class="section-heading">You deployed Twilio Hackpack
-            for Heroku and Flask.</h2>
-        <div class="blurb">Here are some important links:</div>
-        <div class="blurb" style="font-size: 14px; margin: -20px 0 0 0">Voice Request URL: {{
-            params['voice_request_url'] }}</div>
-        <div class="blurb" style="font-size: 14px">SMS Request URL: {{
-            params['sms_request_url'] }}</div>
-        <div class="blurb" style="font-size: 14px">Client URL: {{
-            params['client_url'] }}</div>
-    </div>
-
-    <footer>
-        <div id="twiliocon-2012-footer"><a
-                id="twiliocon-2011-link" 
-                href="http://www.meetup.com/Twilio/New-York-NY/">
-                Lovingly crafted by Twilio New York</a>
+<div id="container">
+    <header>
+        <div id="header">
+            <h1 class="section-heading">Success!</h1>
         </div>
+    </header>
+    <section>
+        <div id="content">
+            <h2 class="section-heading">You deployed Twilio Hackpack
+                for Heroku and Flask.</h2>
+            <p class="blurb">Here are some important links:</p>
+            <a href="https://www.twilio.com/user/account/apps"
+               class="button">Configure Twilio</a>
+            <dl id="url_list">
+                <dt>Voice Request URL</dt>
+                <dd><a href="{{params['voice_request_url'] }}">
+                    {{params['voice_request_url'] }}</a></dd>
+                <dt>SMS Request URL</dt>
+                <dd><a href="{{params['sms_request_url'] }}">
+                    {{params['sms_request_url'] }}</a></dd>
+                <dt>Client URL</dt>
+                <dd><a href="{{params['client_url'] }}">
+                    {{params['client_url'] }}</a></dd>
+           </dl>
+        </div>
+    </section>
+    <footer>
+        <p class="footer">
+            Source on <a
+                href="https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask">Github</a>.
+            Released under <a
+                href="http://www.opensource.org/licenses/mit-license.html">
+                MIT license</a>.
+            Lovingly crafted by <a id="twiliocon-2011-link" 
+                href="http://www.meetup.com/Twilio/New-York-NY/">
+                Twilio New York</a>.
+        </p>
     </footer>
 </div>
 {% endblock %}

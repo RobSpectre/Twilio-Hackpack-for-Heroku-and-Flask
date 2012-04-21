@@ -1,0 +1,8 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "heroku"]
+	url = git@heroku.com:look-here-snacky-11211.git
+	fetch = +refs/heads/*:refs/remotes/heroku/*

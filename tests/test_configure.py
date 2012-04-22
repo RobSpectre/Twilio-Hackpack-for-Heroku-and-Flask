@@ -71,7 +71,8 @@ class TwilioTest(ConfigureTest):
         self.configure.client.applications.update.assert_called_once_with(
                 self.configure.app_sid,
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name='Hackpack for Heroku and Flask')
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
@@ -163,12 +164,14 @@ class TwilioTest(ConfigureTest):
         self.configure.client.applications.update.assert_called_once_with(
                 self.configure.app_sid,
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name='Hackpack for Heroku and Flask')
 
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid)
+                sms_application_sid=self.configure.app_sid,
+                friendly_name='Hackpack for Heroku and Flask')
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -212,7 +215,8 @@ class TwilioTest(ConfigureTest):
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=mock_app.sid,
-                sms_application_sid=mock_app.sid)
+                sms_application_sid=mock_app.sid,
+                friendly_name='Hackpack for Heroku and Flask')
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -252,12 +256,14 @@ class TwilioTest(ConfigureTest):
         self.configure.client.applications.update.assert_called_once_with(
                 self.configure.app_sid,
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name='Hackpack for Heroku and Flask')
 
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid)
+                sms_application_sid=self.configure.app_sid,
+                friendly_name='Hackpack for Heroku and Flask')
 
 
 class HerokuTest(ConfigureTest):

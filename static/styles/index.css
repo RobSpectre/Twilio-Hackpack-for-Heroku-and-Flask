@@ -1,6 +1,10 @@
+body, html {
+    background: #d80000;
+}
+
 #container {
     height: 800px;
-    background: #d80000 url("http://static0.twilio.com/packages/twilio-conference/img/twiliocon-2012-bg.png") no-repeat center top;
+    background: url("http://static0.twilio.com/packages/twilio-conference/img/twiliocon-2012-bg.png") no-repeat center top;
 }
 
 #header {
@@ -100,7 +104,6 @@
 }
 
 #content .button:active {
-    padding: 12px 0 8px 0;
     color: #222;
     background-color: #FFF;
     background: -webkit-gradient(linear, left top, left bottom, from(#cccccc), to(#efefef));

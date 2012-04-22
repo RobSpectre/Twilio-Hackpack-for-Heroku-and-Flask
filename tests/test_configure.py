@@ -1,6 +1,8 @@
 import unittest
 from mock import patch
 
+from twilio.rest import TwilioRestClient
+
 from .context import configure
 
 
@@ -11,7 +13,11 @@ class ConfigureTest(unittest.TestCase):
                 auth_token="yyyyyyyy",
                 phone_number="+15555555555",
                 app_sid="APzzzzzzzzz")
+        self.configure.client = TwilioRestClient(self.configure.account_sid,
+                self.configure.auth_token)
 
+
+class TwilioTest(ConfigureTest):
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
     def test_createNewTwiMLApp(self, MockApp, MockApps):
@@ -253,6 +259,8 @@ class ConfigureTest(unittest.TestCase):
                 voice_application_sid=self.configure.app_sid,
                 sms_application_sid=self.configure.app_sid)
 
+
+class HerokuTest(ConfigureTest):
     def test_getHerokuHostname(self):
         test = self.configure.getHerokuHostname(
                 git_config_path='./tests/test_assets/good_git_config')
@@ -267,3 +275,11 @@ class ConfigureTest(unittest.TestCase):
         self.assertRaises(configure.ConfigurationError,
                 self.configure.getHerokuHostname,
                 git_config_path='./tests/test_assets/bad_git_config')
+
+
+class MiscellaneousTest(unittest.TestCase):
+    def test_instantiateWithoutAccountCredentials(self):
+        test = configure.Configure(account_sid=None, auth_token=None,
+                phone_number=None, app_sid=None)
+        self.assertRaises(configure.ConfigurationError,
+                test.start)

@@ -46,7 +46,6 @@ class Configure(object):
         self.host = host
         self.voice_url = voice_url
         self.sms_url = sms_url
-        self.client = TwilioRestClient(account_sid, auth_token)
 
     def start(self):
         logging.info("Configuring your Twilio hackpack...")
@@ -57,6 +56,9 @@ class Configure(object):
         if not self.auth_token:
             raise ConfigurationError("AUTH_TOKEN is not set in " \
                     "local_settings.")
+
+        logging.debug("Creating Twilio client...")
+        self.client = TwilioRestClient(self.account_sid, self.auth_token)
 
         logging.debug("Checking if host is set.")
         if not self.host:
@@ -96,7 +98,8 @@ class Configure(object):
         try:
             self.client.phone_numbers.update(number.sid,
                     voice_application_sid=app.sid,
-                    sms_application_sid=app.sid)
+                    sms_application_sid=app.sid,
+                    friendly_name="Hackpack for Heroku and Flask")
             logging.debug("Number set.")
         except TwilioRestException, e:
             raise ConfigurationError("An error occurred setting the " \
@@ -149,7 +152,8 @@ class Configure(object):
 
         try:
             app = self.client.applications.update(app_sid, voice_url=voice_url,
-                    sms_url=sms_url)
+                    sms_url=sms_url,
+                    friendly_name="Hackpack for Heroku and Flask")
         except TwilioRestException, e:
             if "404" in e:
                 raise ConfigurationError("This application sid was not " \
@@ -246,40 +250,38 @@ class Configure(object):
 
 class ConfigurationError(Exception):
     def __init__(self, message):
-        Exception.__init__(self, message)
+        #Exception.__init__(self, message)
         logging.error(message)
 
 
-def main():
-    # Logging configuration
-    logging_level = logging.INFO
-    log_handler = logging.StreamHandler(sys.stdout)
-    log_handler.setLevel(logging_level)
-    log_formatter = logging.Formatter('%(asctime)s::%(name)s::' \
-            '%(levelname)s::%(message)s')
-    log_handler.setFormatter(log_formatter)
+# Logging configuration
+logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
-    # Parser configuration
-    usage = "usage: %prog [options] arg1 arg2"
-    parser = OptionParser(usage=usage)
-    parser.add_option("-n", "--new", default=False, action="store_true",
-            help="Purchase new Twilio phone number and configure app to use" \
-                "your hackpack.")
-    parser.add_option("-N", "--new_app", default=False, action="store_true",
-            help="Create a new TwiML application sid to use for your" \
-                "hackpack.")
-    parser.add_option("-a", "--app_sid", default=None,
-            help="Configure specific AppSid to use hackpack urls.")
-    parser.add_option("-#", "--phone_number", default=None,
-            help="Configure specific Twilio number to use hackpack urls.")
-    parser.add_option("-v", "--voice_url", default=None,
-            help="Set the route for your Voice Request URL: (e.g. '/voice').")
-    parser.add_option("-s", "--sms_url", default=None,
-            help="Set the route for your SMS Request URL: (e.g. '/sms').")
-    parser.add_option("-d", "--domain", default=None,
-            help="Set a custom domain.")
-    parser.add_option("-D", "--debug", default=False,
-            action="store_true", help="Turn on debug output.")
+# Parser configuration
+usage = "Twilio Hackpack Configurator - an easy way to configure " \
+        "configure your hackpack!\n%prog [options] arg1 arg2"
+parser = OptionParser(usage=usage)
+parser.add_option("-n", "--new", default=False, action="store_true",
+        help="Purchase new Twilio phone number and configure app to use " \
+            "your hackpack.")
+parser.add_option("-N", "--new_app", default=False, action="store_true",
+        help="Create a new TwiML application sid to use for your " \
+            "hackpack.")
+parser.add_option("-a", "--app_sid", default=None,
+        help="Configure specific AppSid to use your hackpack.")
+parser.add_option("-#", "--phone_number", default=None,
+        help="Configure specific Twilio number to use your hackpack.")
+parser.add_option("-v", "--voice_url", default=None,
+        help="Set the route for your Voice Request URL: (e.g. '/voice').")
+parser.add_option("-s", "--sms_url", default=None,
+        help="Set the route for your SMS Request URL: (e.g. '/sms').")
+parser.add_option("-d", "--domain", default=None,
+        help="Set a custom domain.")
+parser.add_option("-D", "--debug", default=False,
+        action="store_true", help="Turn on debug output.")
+
+
+def main():
     (options, args) = parser.parse_args()
 
     # Configurator configuration :)

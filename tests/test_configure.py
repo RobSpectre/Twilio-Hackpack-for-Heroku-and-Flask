@@ -38,7 +38,8 @@ class TwilioTest(ConfigureTest):
         # Assert
         self.configure.client.applications.create.assert_called_once_with(
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name="Hackpack for Heroku and Flask")
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -212,13 +213,14 @@ class TwilioTest(ConfigureTest):
         # Assert
         self.configure.client.applications.create.assert_called_once_with(
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name="Hackpack for Heroku and Flask")
 
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=mock_app.sid,
                 sms_application_sid=mock_app.sid,
-                friendly_name='Hackpack for Heroku and Flask')
+                friendly_name="Hackpack for Heroku and Flask")
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')

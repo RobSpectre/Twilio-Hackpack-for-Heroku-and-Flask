@@ -145,7 +145,8 @@ class Configure(object):
                 try:
                     logging.info("Creating new application...")
                     app = self.client.applications.create(voice_url=voice_url,
-                            sms_url=sms_url)
+                            sms_url=sms_url,
+                            friendly_name="Hackpack for Heroku and Flask")
                     break
                 except TwilioRestException, e:
                     raise ConfigurationError("Your Twilio app couldn't " \
@@ -297,6 +298,10 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 usage = "Twilio Hackpack Configurator - an easy way to configure " \
         "configure your hackpack!\n%prog [options] arg1 arg2"
 parser = OptionParser(usage=usage)
+parser.add_option("-A", "--account_sid", default=None,
+        help="Configure using specified Account Sid.")
+parser.add_option("-S", "--auth_token", default=None,
+        help="Configure using specified Auth Token.")
 parser.add_option("-n", "--new", default=False, action="store_true",
         help="Purchase new Twilio phone number and configure app to use " \
             "your hackpack.")
@@ -324,8 +329,14 @@ def main():
     configure = Configure()
 
     # Options tree
+    if options.account_sid:
+        configure.account_sid = options.account_sid
+    if options.auth_token:
+        configure.auth_token= options.auth_token
     if options.new:
         configure.phone_number = None
+    if options.new_app:
+        configure.app_sid = None
     if options.app_sid:
         configure.app_sid = options.app_sid
     if options.phone_number:

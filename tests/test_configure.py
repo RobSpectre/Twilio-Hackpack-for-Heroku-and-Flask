@@ -113,7 +113,8 @@ class TwilioTest(ConfigureTest):
         self.configure.purchasePhoneNumber()
 
         # Assert
-        self.configure.client.phone_numbers.purchase.assert_called_once_with()
+        self.configure.client.phone_numbers.purchase.assert_called_once_with(
+                area_code="646")
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')

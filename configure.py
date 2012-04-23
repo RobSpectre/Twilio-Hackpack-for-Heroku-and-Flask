@@ -217,7 +217,8 @@ class Configure(object):
             if choice == "y":
                 try:
                     logging.debug("Purchasing phone number...")
-                    number = self.client.phone_numbers.purchase()
+                    number = self.client.phone_numbers.purchase(
+                            area_code="646")
                     logging.debug("Phone number purchased: %s" %
                             number.friendly_name)
                     break

@@ -225,7 +225,7 @@ class Configure(object):
                 try:
                     logging.debug("Purchasing phone number...")
                     number = self.client.phone_numbers.purchase(
-                            area_code='646')
+                            area_code="646")
                     logging.debug("Phone number purchased: %s" %
                             number.friendly_name)
                     break
@@ -306,13 +306,13 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 usage = "Twilio Hackpack Configurator - an easy way to configure " \
         "configure your hackpack!\n%prog [options] arg1 arg2"
 parser = OptionParser(usage=usage, version="Twilio Hackpack Configurator 1.0")
-parser.add_option("-n", "--new", default=False, action="store_true",
-        help="Purchase new Twilio phone number and configure app to use " \
-            "your hackpack.")
 parser.add_option("-S", "--account_sid", default=None,
         help="Use a specific Twilio ACCOUNT_SID.")
 parser.add_option("-K", "--auth_token", default=None,
         help="Use a specific Twilio AUTH_TOKEN.")
+parser.add_option("-n", "--new", default=False, action="store_true",
+        help="Purchase new Twilio phone number and configure app to use " \
+            "your hackpack.")
 parser.add_option("-N", "--new_app", default=False, action="store_true",
         help="Create a new TwiML application sid to use for your " \
             "hackpack.")

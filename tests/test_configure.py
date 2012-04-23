@@ -1,6 +1,5 @@
 import unittest
 from mock import patch
-import os
 import subprocess
 
 from twilio.rest import TwilioRestClient
@@ -38,7 +37,8 @@ class TwilioTest(ConfigureTest):
         # Assert
         self.configure.client.applications.create.assert_called_once_with(
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name='Hackpack for Heroku and Flask')
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -112,7 +112,7 @@ class TwilioTest(ConfigureTest):
         self.configure.purchasePhoneNumber()
 
         # Assert
-        self.configure.client.phone_numbers.purchase.assert_called_once_with()
+        self.configure.client.phone_numbers.purchase.assert_called_once()
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
@@ -172,8 +172,7 @@ class TwilioTest(ConfigureTest):
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid,
-                friendly_name='Hackpack for Heroku and Flask')
+                sms_application_sid=self.configure.app_sid)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -212,13 +211,13 @@ class TwilioTest(ConfigureTest):
         # Assert
         self.configure.client.applications.create.assert_called_once_with(
                 voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url)
+                sms_url=self.configure.sms_url,
+                friendly_name='Hackpack for Heroku and Flask')
 
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=mock_app.sid,
-                sms_application_sid=mock_app.sid,
-                friendly_name='Hackpack for Heroku and Flask')
+                sms_application_sid=mock_app.sid)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -264,18 +263,17 @@ class TwilioTest(ConfigureTest):
         self.configure.client.phone_numbers.update.assert_called_once_with(
                 "PN123",
                 voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid,
-                friendly_name='Hackpack for Heroku and Flask')
+                sms_application_sid=self.configure.app_sid)
 
     @patch.object(subprocess, 'call')
     @patch.object(configure.Configure, 'configureHackpack')
     def test_start(self, mock_configureHackpack, mock_call):
         mock_call.return_value = None
-        self.configure.host = 'http://look-here-snacky-11211.herokuapps.com'
+        self.configure.host = 'http://look-here-snacky-11211.herokuapp.com'
         self.configure.start()
         mock_configureHackpack.assert_called_once_with(
-                'http://look-here-snacky-11211.herokuapps.com/voice',
-                'http://look-here-snacky-11211.herokuapps.com/sms',
+                'http://look-here-snacky-11211.herokuapp.com/voice',
+                'http://look-here-snacky-11211.herokuapp.com/sms',
                 self.configure.app_sid,
                 self.configure.phone_number)
 
@@ -286,35 +284,20 @@ class TwilioTest(ConfigureTest):
             mock_configureHackpack, mock_call):
         mock_call.return_value = None
         mock_getHerokuHostname.return_value = \
-                'http://look-here-snacky-11211.herokuapps.com'
+                'http://look-here-snacky-11211.herokuapp.com'
         self.configure.start()
         mock_configureHackpack.assert_called_once_with(
-                'http://look-here-snacky-11211.herokuapps.com/voice',
-                'http://look-here-snacky-11211.herokuapps.com/sms',
+                'http://look-here-snacky-11211.herokuapp.com/voice',
+                'http://look-here-snacky-11211.herokuapp.com/sms',
                 self.configure.app_sid,
                 self.configure.phone_number)
-
-    @patch.object(os, 'environ')
-    def test_setLocalEnvironmentVariables(self, mock_environ):
-        mock_environ.get.return_value = None
-        with patch.dict('os.environ', {}):
-            self.configure.setLocalEnvironmentVariables(
-                TWILIO_ACCOUNT_SID=self.configure.account_sid,
-                TWILIO_AUTH_TOKEN=self.configure.auth_token,
-                TWILIO_APP_SID=self.configure.app_sid,
-                TWILIO_CALLER_ID=self.configure.phone_number)
-            assert 'TWILIO_ACCOUNT_SID' not in os.environ
-            assert 'TWILIO_AUTH_TOKEN' not in os.environ
-            assert 'TWILIO_APP_SID' not in os.environ
-            assert 'TWILIO_CALLER_ID' not in os.environ
-
 
 
 class HerokuTest(ConfigureTest):
     def test_getHerokuHostname(self):
         test = self.configure.getHerokuHostname(
                 git_config_path='./tests/test_assets/good_git_config')
-        self.assertEquals(test, 'http://look-here-snacky-11211.herokuapps.com')
+        self.assertEquals(test, 'http://look-here-snacky-11211.herokuapp.com')
 
     def test_getHerokuHostnameNoSuchFile(self):
         self.assertRaises(configure.ConfigurationError,
@@ -335,11 +318,10 @@ class HerokuTest(ConfigureTest):
                 TWILIO_APP_SID=self.configure.app_sid,
                 TWILIO_CALLER_ID=self.configure.phone_number)
         mock_call.assert_called_once_with(["heroku", "config:add",
-                "%s:%s %s:%s %s:%s %s:%s" % (
-                    'TWILIO_ACCOUNT_SID', self.configure.account_sid,
-                    'TWILIO_CALLER_ID', self.configure.phone_number,
-                    'TWILIO_AUTH_TOKEN', self.configure.auth_token,
-                    'TWILIO_APP_SID', self.configure.app_sid)])
+                '%s=%s' % ('TWILIO_ACCOUNT_SID', self.configure.account_sid),
+                '%s=%s' % ('TWILIO_CALLER_ID', self.configure.phone_number),
+                '%s=%s' % ('TWILIO_AUTH_TOKEN', self.configure.auth_token),
+                '%s=%s' % ('TWILIO_APP_SID', self.configure.app_sid)])
 
 
 class MiscellaneousTests(unittest.TestCase):

@@ -79,15 +79,16 @@ class Configure(object):
 
         if self.configureHackpack(self.voice_url, self.sms_url,
                 self.app_sid, self.phone_number):
-            # Ensure local environment variables are set.
-            self.setLocalEnvironmentVariables(
+
+            # Configure Heroku environment variables.
+            self.setHerokuEnvironmentVariables(
                     TWILIO_ACCOUNT_SID=self.account_sid,
                     TWILIO_AUTH_TOKEN=self.auth_token,
                     TWILIO_APP_SID=self.app_sid,
                     TWILIO_CALLER_ID=self.phone_number)
 
-            # Configure Heroku environment variables.
-            self.setHerokuEnvironmentVariables(
+            # Ensure local environment variables are set.
+            self.printLocalEnvironmentVariableCommands(
                     TWILIO_ACCOUNT_SID=self.account_sid,
                     TWILIO_AUTH_TOKEN=self.auth_token,
                     TWILIO_APP_SID=self.app_sid,
@@ -98,7 +99,6 @@ class Configure(object):
         else:
             logging.error("There was an error configuring your hackpack. " \
                     "Weak sauce.")
-
 
     def configureHackpack(self, voice_url, sms_url, app_sid,
             phone_number, *args):
@@ -121,8 +121,7 @@ class Configure(object):
         try:
             self.client.phone_numbers.update(number.sid,
                     voice_application_sid=app.sid,
-                    sms_application_sid=app.sid,
-                    friendly_name="Hackpack for Heroku and Flask")
+                    sms_application_sid=app.sid)
             logging.debug("Number set.")
         except TwilioRestException, e:
             raise ConfigurationError("An error occurred setting the " \
@@ -145,7 +144,8 @@ class Configure(object):
                 try:
                     logging.info("Creating new application...")
                     app = self.client.applications.create(voice_url=voice_url,
-                            sms_url=sms_url)
+                            sms_url=sms_url,
+                            friendly_name="Hackpack for Heroku and Flask")
                     break
                 except TwilioRestException, e:
                     raise ConfigurationError("Your Twilio app couldn't " \
@@ -156,7 +156,7 @@ class Configure(object):
             else:
                 sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
         if app:
-            logging.debug("Application created: %s" % app.sid)
+            logging.info("Application created: %s" % app.sid)
             self.app_sid = app.sid
             return app
         else:
@@ -172,7 +172,7 @@ class Configure(object):
                     sms_url=sms_url,
                     friendly_name="Hackpack for Heroku and Flask")
         except TwilioRestException, e:
-            if "404" in e:
+            if "HTTP ERROR 404" in str(e):
                 raise ConfigurationError("This application sid was not " \
                         "found: %s" % app_sid)
             else:
@@ -208,15 +208,25 @@ class Configure(object):
         # Find number to purchase
         choice = raw_input("Your CALLER_ID is not configured in your " \
             "local_settings.  Purchase a new one? [y/n]").lower()
+        while True:
+            if choice == "y":
+                break
+            elif choice == "n":
+                raise ConfigurationError("To configure this " \
+                        "hackpack CALLER_ID must set in local_settings or " \
+                        "a phone number must be purchased.")
+            else:
+                sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
 
         # Confirm phone number purchase.
-        choice = raw_input("You are sure you want to purchase? " \
+        choice = raw_input("Are you sure you want to purchase? " \
             "Your Twilio account will be charged $1. [y/n]").lower()
         while True:
             if choice == "y":
                 try:
                     logging.debug("Purchasing phone number...")
-                    number = self.client.phone_numbers.purchase()
+                    number = self.client.phone_numbers.purchase(
+                            area_code='646')
                     logging.debug("Phone number purchased: %s" %
                             number.friendly_name)
                     break
@@ -260,28 +270,26 @@ class Configure(object):
                 logging.debug("Heroku remote found: %s" % subdomain)
 
         if subdomain:
-            host = "http://%s.herokuapps.com" % subdomain.strip()
+            host = "http://%s.herokuapp.com" % subdomain.strip()
             logging.debug("Returning full host: %s" % host)
             return host
         else:
             raise ConfigurationError("Could not find Heroku remote in " \
                     "your .git config.  Have you created the Heroku app?")
 
-    def setLocalEnvironmentVariables(self, **kwargs):
-        logging.info("Setting local environment variables...")
+    def printLocalEnvironmentVariableCommands(self, **kwargs):
+        logging.info("Copy/paste these commands to set your local " \
+                "environment to use this hackpack...")
         for k, v in kwargs.iteritems():
-            if v and not os.environ.get(k, None):
-                logging.debug("Setting local environment variable %s" \
-                        % k)
-                os.environ[k] = v
+            if v:
+                print "export %s=%s" % (k, v)
 
     def setHerokuEnvironmentVariables(self, **kwargs):
         logging.info("Setting Heroku environment variables...")
-        envvar_string = ''
-        for k, v in kwargs.iteritems():
-            if v:
-                envvar_string += "%s:%s " % (k, v)
-        return subprocess.call(["heroku", "config:add", envvar_string.strip()])
+        envvars = ["%s=%s" % (k, v) for k, v in kwargs.iteritems() if v]
+        envvars.insert(0, "heroku")
+        envvars.insert(1, "config:add")
+        return subprocess.call(envvars)
 
 
 class ConfigurationError(Exception):
@@ -291,7 +299,7 @@ class ConfigurationError(Exception):
 
 
 # Logging configuration
-logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(message)s')
 
 # Parser configuration
 usage = "Twilio Hackpack Configurator - an easy way to configure " \
@@ -300,16 +308,16 @@ parser = OptionParser(usage=usage)
 parser.add_option("-n", "--new", default=False, action="store_true",
         help="Purchase new Twilio phone number and configure app to use " \
             "your hackpack.")
-parser.add_option("-N", "--new_app", default=False, action="store_true",
+parser.add_option("-N", "--new-app", default=False, action="store_true",
         help="Create a new TwiML application sid to use for your " \
             "hackpack.")
-parser.add_option("-a", "--app_sid", default=None,
+parser.add_option("-a", "--app-sid", default=None,
         help="Configure specific AppSid to use your hackpack.")
-parser.add_option("-#", "--phone_number", default=None,
+parser.add_option("-#", "--phone-number", default=None,
         help="Configure specific Twilio number to use your hackpack.")
-parser.add_option("-v", "--voice_url", default=None,
+parser.add_option("-v", "--voice-url", default=None,
         help="Set the route for your Voice Request URL: (e.g. '/voice').")
-parser.add_option("-s", "--sms_url", default=None,
+parser.add_option("-s", "--sms-url", default=None,
         help="Set the route for your SMS Request URL: (e.g. '/sms').")
 parser.add_option("-d", "--domain", default=None,
         help="Set a custom domain.")
@@ -326,6 +334,8 @@ def main():
     # Options tree
     if options.new:
         configure.phone_number = None
+    if options.new_app:
+        configure.app_sid = None
     if options.app_sid:
         configure.app_sid = options.app_sid
     if options.phone_number:
@@ -337,7 +347,8 @@ def main():
     if options.domain:
         configure.host = options.domain
     if options.debug:
-        logging.DEBUG
+        logging.basicConfig(level=logging.DEBUG,
+                format='%(levelname)s - %(message)s')
 
     configure.start()
 

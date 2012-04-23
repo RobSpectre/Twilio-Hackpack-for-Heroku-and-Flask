@@ -4,8 +4,5 @@ init:
 test:
 	nosetests -v tests
 
-test:
-	nosetests tests
-
 configure:
 	python configure.py

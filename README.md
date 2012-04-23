@@ -15,8 +15,8 @@ Look at all these crazy features!
 * [Twilio Client](http://www.twilio.com/api/client) - This hackpack ships 
   with a base Jinja2 template for Twilio Client already configured and ready to
   call.  
-* Automagic Configuration - Just set ACCOUNT_SID and AUTH_TOKEN, `make
-  configure` takes care of the rest.
+* Automagic Configuration - Just run `python configure.py --account_sid ACxxxx --auth_token yyyyy` 
+  and the hackpack configures Twilio and Heroku for you.
 * Production Ready - The [production branch](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/tree/production)
   features a few more settings and dependencies to make the hackpack ready to
   put into live service.

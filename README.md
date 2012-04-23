@@ -13,10 +13,15 @@ Status](https://secure.travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-F
 Look at all these crazy features!
 
 * [Twilio Client](http://www.twilio.com/api/client) - This hackpack ships 
-  with a base Jinja2 template for Twilio Client.  Just plug in your AppSid,
-  and your browser becomes a phone.
-* Plug-and-Play - Procfile and requirements.txt preconfigured for Foreman.
-* Easy configuration - Use environment variables or local_settings.py file.
+  with a base Jinja2 template for Twilio Client already configured and ready to
+  call.  
+* Automagic Configuration - Just set ACCOUNT_SID and AUTH_TOKEN, `make
+  configure` takes care of the rest.
+* Production Ready - The [production branch](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/tree/production)
+  features a few more settings and dependencies to make the hackpack ready to
+  put into live service.
+* Plug-and-Play - Procfile, requirements.txt and Makefile makes installation
+  and usage a breeze.
 * Boilerplate - All the Flask app boilerplate with example Voice and SMS 
   Request URLs ready for use on Twilio.
 * Testing - Easy base class for unit testing with example tests, nose ready.
@@ -90,9 +95,9 @@ def gather():
 
 ## Installation
 
-Step-by-step on how to install and configure this hackpack.
+Step-by-step on how to deploy, configure and develop on this hackpack.
 
-### Basic Install
+### Getting Started 
 
 1) Grab latest source
 <pre>
@@ -119,16 +124,38 @@ heroku scale web=1
 heroku open
 </pre>
 
+
 ### Configuration
 
-Want to use the built-in Twilio Client template?  Configure your app with two
-easy options.
+Want to use the built-in Twilio Client template?  Configure your hackpack with
+three easy options.
+
+#### Automagic Configuration
+
+This hackpack ships with an auto-configure script that will create a new TwiML
+app, purchase a new phone number, and set your Heroku app's environment
+variables to use your new settings.  Here's a quick step-by-step:
+
+1) Run configure script and follow instructions.
+<pre>
+python configure.py --account_sid ACxxxxxx --auth_token yyyyyyy
+</pre>
+
+2) For local development, copy/paste the environment variable commands the
+configurator provides to your shell.
+<pre>
+export TWILIO_ACCOUNT_SID=ACxxxxxx
+export TWILIO_AUTH_TOKEN=yyyyyyyyy
+export TWILIO_APP_SID=APzzzzzzzzzz
+export TWILIO_CALLER_ID=+15556667777
+</pre>
+
 
 #### local_settings.py
 
 local_settings.py is a file available in the hackpack route for you to configure
 your twilio account credentials manually.  Be sure not to expose your Twilio
-account to a public repo, however.
+account to a public repo though.
 
 ```python
 ACCOUNT_SID = "ACxxxxxxxxxxxxx" 
@@ -137,11 +164,12 @@ TWILIO_APP_SID = "APzzzzzzzzz"
 TWILIO_CALLER_ID = "+17778889999"
 ```
 
-#### Environment Variables
+#### Setting Your Own Environment Variables
 
-The canonical approach for Heroku apps. This method is slightly more complex
-than configuring in local_settings.py, but better for you, and therefore (of
-course) the world.
+The configurator will automatically use your environment variables if you
+already have a TwiML app and phone number you would prefer to use.  When these
+environment variables are present, it will configure the Twilio and Heroku apps
+all to use the hackpack.
 
 1) Set environment variables locally.
 <pre>
@@ -151,13 +179,31 @@ export TWILIO_APP_SID=APzzzzzzzzzzzzzzzzzz
 export TWILIO_CALLER_ID=+15556667777
 </pre>
 
-2) Set environment variables for Heroku app.
+2) Run configurator
 <pre>
-heroku config:add TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxx
-heroku config:add TWILIO_AUTH_TOKEN=yyyyyyyyyyyyyyyyy
-heroku config:add TWILIO_APP_SID=APzzzzzzzzzzzzzzzzzz
-heroku config:add TWILIO_CALLER_ID=+15556667777
+python configure.py
 </pre>
+
+
+### Development
+
+Getting your local environment setup to work with this hackpack is similarly
+easy.  After you configure your hackpack with the steps above, use this guide to
+get going locally:
+
+1) Install the dependencies.
+<pre>
+make init
+</pre>
+
+2) Launch local development webserver
+<pre>
+foreman start
+</pre>
+
+3) Open browser to [http://localhost:5000](http://localhost:5000).
+
+4) Tweak away on `app.py`.
 
 
 ## Testing
@@ -165,7 +211,7 @@ heroku config:add TWILIO_CALLER_ID=+15556667777
 This hackpack comes with a full testing suite ready for nose.
 
 <pre>
-nosetests -v tests
+make test
 </pre>
 
 It also ships with an easy-to-use base class for testing your

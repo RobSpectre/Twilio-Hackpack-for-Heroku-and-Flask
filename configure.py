@@ -23,7 +23,6 @@ Deploy to custom domain:
 
 from optparse import OptionParser
 import sys
-import os
 import subprocess
 import logging
 
@@ -280,11 +279,11 @@ class Configure(object):
     def printLocalEnvironmentVariableCommands(self, **kwargs):
         logging.info("Copy/paste these commands to set your local " \
                 "environment to use this hackpack...")
-        print "\n\n"
+        print "\n"
         for k, v in kwargs.iteritems():
             if v:
                 print "export %s=%s" % (k, v)
-        print "\n\n"
+        print "\n"
 
     def setHerokuEnvironmentVariables(self, **kwargs):
         logging.info("Setting Heroku environment variables...")
@@ -310,6 +309,10 @@ parser = OptionParser(usage=usage, version="Twilio Hackpack Configurator 1.0")
 parser.add_option("-n", "--new", default=False, action="store_true",
         help="Purchase new Twilio phone number and configure app to use " \
             "your hackpack.")
+parser.add_option("-S", "--account_sid", default=None,
+        help="Use a specific Twilio ACCOUNT_SID.")
+parser.add_option("-K", "--auth_token", default=None,
+        help="Use a specific Twilio AUTH_TOKEN.")
 parser.add_option("-N", "--new_app", default=False, action="store_true",
         help="Create a new TwiML application sid to use for your " \
             "hackpack.")
@@ -334,6 +337,10 @@ def main():
     configure = Configure()
 
     # Options tree
+    if options.account_sid:
+        configure.account_sid = options.account_sid
+    if options.auth_token:
+        configure.auth_token = options.auth_token
     if options.new:
         configure.phone_number = None
     if options.new_app:

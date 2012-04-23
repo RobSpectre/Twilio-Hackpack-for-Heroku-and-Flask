@@ -20,7 +20,7 @@ Look at all these crazy features!
 * Production Ready - The [production branch](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/tree/production)
   features a few more settings and dependencies to make the hackpack ready to
   put into live service.
-* Plug-and-Play - Procfile, requirements.txt and Makefile makes installation
+* Plug-and-Play - Procfile, requirements.txt and Makefile make installation
   and usage a breeze.
 * Boilerplate - All the Flask app boilerplate with example Voice and SMS 
   Request URLs ready for use on Twilio.

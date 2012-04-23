@@ -23,6 +23,8 @@ Deploy to custom domain:
 
 from optparse import OptionParser
 import sys
+import os
+import subprocess
 import logging
 
 from twilio.rest import TwilioRestClient
@@ -46,6 +48,7 @@ class Configure(object):
         self.host = host
         self.voice_url = voice_url
         self.sms_url = sms_url
+        self.friendly_phone_number = None
 
     def start(self):
         logging.info("Configuring your Twilio hackpack...")
@@ -74,8 +77,28 @@ class Configure(object):
             self.sms_url = self.host + self.sms_url
             logging.debug("Setting sms_url with host: %s" % self.sms_url)
 
-        return self.configureHackpack(self.voice_url, self.sms_url,
-                self.app_sid, self.phone_number)
+        if self.configureHackpack(self.voice_url, self.sms_url,
+                self.app_sid, self.phone_number):
+            # Ensure local environment variables are set.
+            self.setLocalEnvironmentVariables(
+                    TWILIO_ACCOUNT_SID=self.account_sid,
+                    TWILIO_AUTH_TOKEN=self.auth_token,
+                    TWILIO_APP_SID=self.app_sid,
+                    TWILIO_CALLER_ID=self.phone_number)
+
+            # Configure Heroku environment variables.
+            self.setHerokuEnvironmentVariables(
+                    TWILIO_ACCOUNT_SID=self.account_sid,
+                    TWILIO_AUTH_TOKEN=self.auth_token,
+                    TWILIO_APP_SID=self.app_sid,
+                    TWILIO_CALLER_ID=self.phone_number)
+
+            logging.info("Hackpack is now configured.  Call %s to test!"
+                    % self.friendly_phone_number)
+        else:
+            logging.error("There was an error configuring your hackpack. " \
+                    "Weak sauce.")
+
 
     def configureHackpack(self, voice_url, sms_url, app_sid,
             phone_number, *args):
@@ -108,8 +131,6 @@ class Configure(object):
 
         # We're done!
         if number:
-            logging.info("Hackpack is now configured.  Call %s to test!"
-                    % number.friendly_name)
             return number
         else:
             raise ConfigurationError("An unknown error occurred configuring " \
@@ -136,6 +157,7 @@ class Configure(object):
                 sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
         if app:
             logging.debug("Application created: %s" % app.sid)
+            self.app_sid = app.sid
             return app
         else:
             raise ConfigurationError("There was an unknown error " \
@@ -144,11 +166,6 @@ class Configure(object):
     def setAppRequestUrls(self, app_sid, voice_url, sms_url):
         logging.info("Setting request urls for application sid: %s" \
                 % app_sid)
-
-        # If voice_url or sms_url not FQDN, use stored host
-        for arg in (voice_url, sms_url):
-            if "http://" not in arg and self.host:
-                arg = self.host + arg
 
         try:
             app = self.client.applications.update(app_sid, voice_url=voice_url,
@@ -179,6 +196,7 @@ class Configure(object):
                     "occured: %s" % e)
         if number:
             logging.debug("Retrieved sid: %s" % number[0].sid)
+            self.friendly_phone_number = number[0].friendly_name
             return number[0]
         else:
             raise ConfigurationError("An unknown error occurred retrieving " \
@@ -215,6 +233,8 @@ class Configure(object):
         # Return number or error out.
         if number:
             logging.debug("Returning phone number: %s " % number.friendly_name)
+            self.phone_number = number.phone_number
+            self.friendly_phone_number = number.friendly_name
             return number
         else:
             raise ConfigurationError("There was an unknown error purchasing " \
@@ -242,10 +262,26 @@ class Configure(object):
         if subdomain:
             host = "http://%s.herokuapps.com" % subdomain.strip()
             logging.debug("Returning full host: %s" % host)
-            return host 
+            return host
         else:
             raise ConfigurationError("Could not find Heroku remote in " \
                     "your .git config.  Have you created the Heroku app?")
+
+    def setLocalEnvironmentVariables(self, **kwargs):
+        logging.info("Setting local environment variables...")
+        for k, v in kwargs.iteritems():
+            if v and not os.environ.get(k, None):
+                logging.debug("Setting local environment variable %s" \
+                        % k)
+                os.environ[k] = v
+
+    def setHerokuEnvironmentVariables(self, **kwargs):
+        logging.info("Setting Heroku environment variables...")
+        envvar_string = ''
+        for k, v in kwargs.iteritems():
+            if v:
+                envvar_string += "%s:%s " % (k, v)
+        return subprocess.call(["heroku", "config:add", envvar_string.strip()])
 
 
 class ConfigurationError(Exception):

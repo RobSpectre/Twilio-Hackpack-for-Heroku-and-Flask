@@ -1,5 +1,7 @@
 import unittest
 from mock import patch
+import os
+import subprocess
 
 from twilio.rest import TwilioRestClient
 
@@ -265,6 +267,48 @@ class TwilioTest(ConfigureTest):
                 sms_application_sid=self.configure.app_sid,
                 friendly_name='Hackpack for Heroku and Flask')
 
+    @patch.object(subprocess, 'call')
+    @patch.object(configure.Configure, 'configureHackpack')
+    def test_start(self, mock_configureHackpack, mock_call):
+        mock_call.return_value = None
+        self.configure.host = 'http://look-here-snacky-11211.herokuapps.com'
+        self.configure.start()
+        mock_configureHackpack.assert_called_once_with(
+                'http://look-here-snacky-11211.herokuapps.com/voice',
+                'http://look-here-snacky-11211.herokuapps.com/sms',
+                self.configure.app_sid,
+                self.configure.phone_number)
+
+    @patch.object(subprocess, 'call')
+    @patch.object(configure.Configure, 'configureHackpack')
+    @patch.object(configure.Configure, 'getHerokuHostname')
+    def test_startWithoutHostname(self, mock_getHerokuHostname,
+            mock_configureHackpack, mock_call):
+        mock_call.return_value = None
+        mock_getHerokuHostname.return_value = \
+                'http://look-here-snacky-11211.herokuapps.com'
+        self.configure.start()
+        mock_configureHackpack.assert_called_once_with(
+                'http://look-here-snacky-11211.herokuapps.com/voice',
+                'http://look-here-snacky-11211.herokuapps.com/sms',
+                self.configure.app_sid,
+                self.configure.phone_number)
+
+    @patch.object(os, 'environ')
+    def test_setLocalEnvironmentVariables(self, mock_environ):
+        mock_environ.get.return_value = None
+        with patch.dict('os.environ', {}):
+            self.configure.setLocalEnvironmentVariables(
+                TWILIO_ACCOUNT_SID=self.configure.account_sid,
+                TWILIO_AUTH_TOKEN=self.configure.auth_token,
+                TWILIO_APP_SID=self.configure.app_sid,
+                TWILIO_CALLER_ID=self.configure.phone_number)
+            assert 'TWILIO_ACCOUNT_SID' not in os.environ
+            assert 'TWILIO_AUTH_TOKEN' not in os.environ
+            assert 'TWILIO_APP_SID' not in os.environ
+            assert 'TWILIO_CALLER_ID' not in os.environ
+
+
 
 class HerokuTest(ConfigureTest):
     def test_getHerokuHostname(self):
@@ -282,10 +326,31 @@ class HerokuTest(ConfigureTest):
                 self.configure.getHerokuHostname,
                 git_config_path='./tests/test_assets/bad_git_config')
 
+    @patch.object(subprocess, 'call')
+    def test_setHerokuEnvironmentVariables(self, mock_call):
+        mock_call.return_value = None
+        self.configure.setHerokuEnvironmentVariables(
+                TWILIO_ACCOUNT_SID=self.configure.account_sid,
+                TWILIO_AUTH_TOKEN=self.configure.auth_token,
+                TWILIO_APP_SID=self.configure.app_sid,
+                TWILIO_CALLER_ID=self.configure.phone_number)
+        mock_call.assert_called_once_with(["heroku", "config:add",
+                "%s:%s %s:%s %s:%s %s:%s" % (
+                    'TWILIO_ACCOUNT_SID', self.configure.account_sid,
+                    'TWILIO_CALLER_ID', self.configure.phone_number,
+                    'TWILIO_AUTH_TOKEN', self.configure.auth_token,
+                    'TWILIO_APP_SID', self.configure.app_sid)])
 
-class MiscellaneousTest(unittest.TestCase):
-    def test_instantiateWithoutAccountCredentials(self):
+
+class MiscellaneousTests(unittest.TestCase):
+    def test_configureWithoutAccountSid(self):
         test = configure.Configure(account_sid=None, auth_token=None,
+                phone_number=None, app_sid=None)
+        self.assertRaises(configure.ConfigurationError,
+                test.start)
+
+    def test_configureWithoutAuthToken(self):
+        test = configure.Configure(account_sid='ACxxxxxxx', auth_token=None,
                 phone_number=None, app_sid=None)
         self.assertRaises(configure.ConfigurationError,
                 test.start)

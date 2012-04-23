@@ -150,6 +150,9 @@ export TWILIO_APP_SID=APzzzzzzzzzz
 export TWILIO_CALLER_ID=+15556667777
 </pre>
 
+Automagic configuration comes with a number of features.  
+`python configure.py --help` to see them all.
+
 
 #### local_settings.py
 

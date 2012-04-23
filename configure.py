@@ -280,9 +280,11 @@ class Configure(object):
     def printLocalEnvironmentVariableCommands(self, **kwargs):
         logging.info("Copy/paste these commands to set your local " \
                 "environment to use this hackpack...")
+        print "\n\n"
         for k, v in kwargs.iteritems():
             if v:
                 print "export %s=%s" % (k, v)
+        print "\n\n"
 
     def setHerokuEnvironmentVariables(self, **kwargs):
         logging.info("Setting Heroku environment variables...")
@@ -304,20 +306,20 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 # Parser configuration
 usage = "Twilio Hackpack Configurator - an easy way to configure " \
         "configure your hackpack!\n%prog [options] arg1 arg2"
-parser = OptionParser(usage=usage)
+parser = OptionParser(usage=usage, version="Twilio Hackpack Configurator 1.0")
 parser.add_option("-n", "--new", default=False, action="store_true",
         help="Purchase new Twilio phone number and configure app to use " \
             "your hackpack.")
-parser.add_option("-N", "--new-app", default=False, action="store_true",
+parser.add_option("-N", "--new_app", default=False, action="store_true",
         help="Create a new TwiML application sid to use for your " \
             "hackpack.")
-parser.add_option("-a", "--app-sid", default=None,
+parser.add_option("-a", "--app_sid", default=None,
         help="Configure specific AppSid to use your hackpack.")
 parser.add_option("-#", "--phone-number", default=None,
         help="Configure specific Twilio number to use your hackpack.")
-parser.add_option("-v", "--voice-url", default=None,
+parser.add_option("-v", "--voice_url", default=None,
         help="Set the route for your Voice Request URL: (e.g. '/voice').")
-parser.add_option("-s", "--sms-url", default=None,
+parser.add_option("-s", "--sms_url", default=None,
         help="Set the route for your SMS Request URL: (e.g. '/sms').")
 parser.add_option("-d", "--domain", default=None,
         help="Set a custom domain.")

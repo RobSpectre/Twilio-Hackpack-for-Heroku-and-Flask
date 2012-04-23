@@ -121,8 +121,7 @@ class Configure(object):
         try:
             self.client.phone_numbers.update(number.sid,
                     voice_application_sid=app.sid,
-                    sms_application_sid=app.sid,
-                    friendly_name="Hackpack for Heroku and Flask")
+                    sms_application_sid=app.sid)
             logging.debug("Number set.")
         except TwilioRestException, e:
             raise ConfigurationError("An error occurred setting the " \

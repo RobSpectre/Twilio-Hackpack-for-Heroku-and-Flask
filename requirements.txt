@@ -2,3 +2,4 @@ Flask==0.8
 Flask-SQLAlchemy==0.15
 twilio==3.3.6
 gunicorn==0.14.2
+mock==0.8.0

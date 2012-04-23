@@ -1,12 +1,5 @@
 import unittest
-try:
-    from app import app
-except ImportError:
-    import sys
-    import os.path
-    sys.path.append(os.path.abspath('.'))
-    from app import app
-
+from .context import app
 
 class WebTest(unittest.TestCase):
     def setUp(self):

@@ -1,0 +1,130 @@
+body, html {
+    background: #d80000;
+}
+
+#container {
+    height: 800px;
+    background: url("http://static0.twilio.com/packages/twilio-conference/img/twiliocon-2012-bg.png") no-repeat center top;
+}
+
+#header {
+    width: 960px;
+    margin: 0 auto;
+    padding: 100px 0 0 0;
+}
+
+#header .section-heading {
+    line-height: 68px;
+    margin: 0;
+    padding: 0 0 0 233px;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 52px;
+    font-weight: 100;
+    color: #FFF;
+    text-align: center;
+    background: url("http://static0.twilio.com/packages/twilio-conference/img/twilio-logo-2012-header.png") no-repeat 148px center;
+}
+
+#content {
+    width: 960px;
+    margin: 0 auto;
+    padding: 70px 0 0 0;
+}
+
+#content .section-heading {
+    margin: 0 0 10px 0;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 38px;
+    font-weight: 100;
+    color: #7C0000;
+    text-align: center;
+}
+
+#content .blurb {
+    line-height: 1.2em;
+    margin: 5px 0 20px 85px;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 17px;
+    font-weight: 100;
+    color: #DDD;
+}
+
+#url_list {
+    margin: 10px 0 20px 85px;
+}
+
+#url_list dt {
+    line-height: 1.2em;
+    margin: 0px;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 14px;
+    font-weight: 100;
+    color: #DDD;
+}
+
+#url_list dd, #url_list a {
+    margin: 3px 0 5px 30px;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 18px;
+    font-weight: 100;
+    color: #7C0000;
+}
+
+#url_list a:hover {
+    color: #FFF;
+}
+
+#content a {
+    text-decoration: none;
+}
+
+#content .button {
+    width: 200px;
+    float: right;
+    margin: 30px 80px 0 0;
+    padding: 10px;
+    font-family: 'Helvetica',sans-serif;
+    font-size: 26px;
+    font-weight: 100;
+    color: #454545;
+    text-align: center;
+    background-color: #EFEFEF;
+    background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#cccccc));
+    background: -moz-linear-gradient(top, #efefef, #cccccc);
+    border-top: 2px solid #FFF;
+    border-bottom: 1px solid #555;
+}
+
+#content .button:hover {
+    color: #222;
+    background-color: #FFF;
+    background: -webkit-gradient(linear, left top, left bottom, from(white), to(#dddddd));
+    background: -moz-linear-gradient(top, white, #dddddd);
+    border-top: 2px solid #FFF;
+}
+
+#content .button:active {
+    color: #222;
+    background-color: #FFF;
+    background: -webkit-gradient(linear, left top, left bottom, from(#cccccc), to(#efefef));
+    background: -moz-linear-gradient(top, #cccccc, #efefef);
+    border-top: 2px solid #888;
+    border-bottom: 1px solid #FFF;
+}
+
+.footer {
+    width: 960px;
+    margin: 0 auto;
+    padding: 10px 0 0 0;
+    text-align: center;
+    color: #7C0000;
+}
+
+.footer a {
+    text-decoration: none;
+    color: #7C0000;
+}
+
+.footer a:hover {
+    color: #FFF;
+}

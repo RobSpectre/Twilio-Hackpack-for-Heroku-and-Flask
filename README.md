@@ -136,12 +136,17 @@ This hackpack ships with an auto-configure script that will create a new TwiML
 app, purchase a new phone number, and set your Heroku app's environment
 variables to use your new settings.  Here's a quick step-by-step:
 
-1) Run configure script and follow instructions.
+1) Make sure you have all dependencies installed
+<pre>
+git init
+</pre>
+
+2) Run configure script and follow instructions.
 <pre>
 python configure.py --account_sid ACxxxxxx --auth_token yyyyyyy
 </pre>
 
-2) For local development, copy/paste the environment variable commands the
+3) For local development, copy/paste the environment variable commands the
 configurator provides to your shell.
 <pre>
 export TWILIO_ACCOUNT_SID=ACxxxxxx

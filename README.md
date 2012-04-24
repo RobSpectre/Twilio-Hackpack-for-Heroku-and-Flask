@@ -138,7 +138,7 @@ variables to use your new settings.  Here's a quick step-by-step:
 
 1) Make sure you have all dependencies installed
 <pre>
-git init
+make init
 </pre>
 
 2) Run configure script and follow instructions.

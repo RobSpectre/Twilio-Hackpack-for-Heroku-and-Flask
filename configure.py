@@ -136,9 +136,9 @@ class Configure(object):
 
     def createNewTwiMLApp(self, voice_url, sms_url):
         logging.debug("Asking user to create new app sid...")
-        choice = raw_input("Your APP_SID is not configured in your " \
-            "local_settings.  Create a new one? [y/n]").lower()
         while True:
+            choice = raw_input("Your APP_SID is not configured in your " \
+                 "local_settings.  Create a new one? [y/n]").lower()
             if choice == "y":
                 try:
                     logging.info("Creating new application...")
@@ -204,10 +204,10 @@ class Configure(object):
     def purchasePhoneNumber(self):
         logging.debug("Asking user to purchase phone number...")
 
-        # Find number to purchase
-        choice = raw_input("Your CALLER_ID is not configured in your " \
-            "local_settings.  Purchase a new one? [y/n]").lower()
         while True:
+            # Find number to purchase
+            choice = raw_input("Your CALLER_ID is not configured in your " \
+                "local_settings.  Purchase a new one? [y/n]").lower()
             if choice == "y":
                 break
             elif choice == "n":
@@ -217,10 +217,10 @@ class Configure(object):
             else:
                 sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
 
-        # Confirm phone number purchase.
-        choice = raw_input("Are you sure you want to purchase? " \
-            "Your Twilio account will be charged $1. [y/n]").lower()
         while True:
+            # Confirm phone number purchase.
+            choice = raw_input("Are you sure you want to purchase? " \
+                "Your Twilio account will be charged $1. [y/n]").lower()
             if choice == "y":
                 try:
                     logging.debug("Purchasing phone number...")

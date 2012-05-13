@@ -219,7 +219,7 @@ class Configure(object):
                         "hackpack CALLER_ID must set in local_settings or " \
                         "a phone number must be purchased.")
             else:
-                sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
+                logging.error("Please choose yes or no with a 'y' or 'n'")
 
         logging.debug("Confirming purchase...")
         i = 0
@@ -244,7 +244,7 @@ class Configure(object):
                         "hackpack CALLER_ID must set in local_settings or " \
                         "a phone number must be purchased.")
             else:
-                sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
+                logging.error("Please choose yes or no with a 'y' or 'n'")
 
         # Return number or error out.
         if number:

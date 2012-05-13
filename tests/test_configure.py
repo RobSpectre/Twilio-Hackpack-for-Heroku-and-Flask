@@ -1,4 +1,5 @@
 import unittest
+from mock import Mock
 from mock import patch
 import subprocess
 
@@ -100,8 +101,6 @@ class TwilioTest(ConfigureTest):
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.search = \
-                [mock_phone_number]
         self.configure.client.phone_numbers.purchase = \
                 mock_phone_number
 
@@ -123,8 +122,6 @@ class TwilioTest(ConfigureTest):
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.search = \
-                [mock_phone_number]
         self.configure.client.phone_numbers.purchase = \
                 mock_phone_number
 
@@ -325,7 +322,7 @@ class HerokuTest(ConfigureTest):
                 '%s=%s' % ('TWILIO_APP_SID', self.configure.app_sid)])
 
 
-class MiscellaneousTests(unittest.TestCase):
+class MiscellaneousTest(unittest.TestCase):
     def test_configureWithoutAccountSid(self):
         test = configure.Configure(account_sid=None, auth_token=None,
                 phone_number=None, app_sid=None)
@@ -337,3 +334,75 @@ class MiscellaneousTests(unittest.TestCase):
                 phone_number=None, app_sid=None)
         self.assertRaises(configure.ConfigurationError,
                 test.start)
+
+
+class InputTest(ConfigureTest):
+    @patch('twilio.rest.resources.Applications')
+    @patch('twilio.rest.resources.Application')
+    def test_createNewTwiMLAppWtfInput(self, MockApp, MockApps):
+        # Mock the Applications resource and its create method.
+        self.configure.client.applications = MockApps.return_value
+        self.configure.client.applications.create.return_value = \
+            MockApp.return_value
+
+        # Mock our input
+        configure.raw_input = Mock()
+        configure.raw_input.return_value = 'wtf'
+        
+        # Test / Assert
+        self.assertRaises(configure.ConfigurationError,
+                self.configure.createNewTwiMLApp, self.configure.voice_url,
+                self.configure.sms_url)
+        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did " \
+                "not appear three times, instead: %i" %
+                configure.raw_input.call_count)
+        self.assertFalse(self.configure.client.applications.create.called,
+            "Unexpected request to create AppSid made.")
+
+    @patch('twilio.rest.resources.PhoneNumbers')
+    @patch('twilio.rest.resources.PhoneNumber')
+    def test_purchasePhoneNumberNegativeInput(self, MockPhoneNumbers,
+            MockPhoneNumber):
+        # Mock the PhoneNumbers resource and its search and purchase methods
+        mock_phone_number = MockPhoneNumber.return_value
+        mock_phone_number.phone_number = self.configure.phone_number
+        self.configure.client.phone_numbers = MockPhoneNumbers.return_value
+        self.configure.client.phone_numbers.purchase = \
+                mock_phone_number
+
+        # Mock our input.
+        configure.raw_input = Mock()
+        configure.raw_input.return_value = 'wtf'
+
+        # Test / Assert
+        self.assertRaises(configure.ConfigurationError,
+                self.configure.purchasePhoneNumber)
+        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did " \
+                "not appear three times, instead: %i" %
+                configure.raw_input.call_count)
+        self.assertFalse(self.configure.client.phone_numbers.purchase.called,
+                "Unexpected request to create AppSid made.")
+
+    @patch('twilio.rest.resources.PhoneNumbers')
+    @patch('twilio.rest.resources.PhoneNumber')
+    def test_purchasePhoneNumberWtfInputConfirm(self,
+            MockPhoneNumbers, MockPhoneNumber):
+        # Mock the PhoneNumbers resource and its search and purchase methods
+        mock_phone_number = MockPhoneNumber.return_value
+        mock_phone_number.phone_number = self.configure.phone_number
+        self.configure.client.phone_numbers = MockPhoneNumbers.return_value
+        self.configure.client.phone_numbers.purchase = \
+                mock_phone_number
+
+        # Mock our input.
+        configure.raw_input = Mock()
+        configure.raw_input.side_effect = ['y', 'wtf', 'wtf', 'wtf']
+
+        # Test / Assert
+        self.assertRaises(configure.ConfigurationError,
+                self.configure.purchasePhoneNumber)
+        self.assertTrue(configure.raw_input.call_count == 4, "Prompt did " \
+                "not appear three times, instead: %i" %
+                configure.raw_input.call_count)
+        self.assertFalse(self.configure.client.phone_numbers.purchase.called,
+                "Unexpectedly requested phone number purchase.")

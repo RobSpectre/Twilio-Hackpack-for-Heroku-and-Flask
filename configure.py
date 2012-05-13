@@ -136,9 +136,11 @@ class Configure(object):
 
     def createNewTwiMLApp(self, voice_url, sms_url):
         logging.debug("Asking user to create new app sid...")
-        choice = raw_input("Your APP_SID is not configured in your " \
-            "local_settings.  Create a new one? [y/n]").lower()
+        i = 0
         while True:
+            i = i + 1
+            choice = raw_input("Your APP_SID is not configured in your " \
+                 "local_settings.  Create a new one? [y/n]").lower()
             if choice == "y":
                 try:
                     logging.info("Creating new application...")
@@ -149,11 +151,11 @@ class Configure(object):
                 except TwilioRestException, e:
                     raise ConfigurationError("Your Twilio app couldn't " \
                             "be created: %s" % e)
-            elif choice == "n":
+            elif choice == "n" or i >= 3:
                 raise ConfigurationError("Your APP_SID setting must be  " \
                         "set in local_settings.")
             else:
-                sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
+                logging.error("Please choose yes or no with a 'y' or 'n'")
         if app:
             logging.info("Application created: %s" % app.sid)
             self.app_sid = app.sid
@@ -204,23 +206,28 @@ class Configure(object):
     def purchasePhoneNumber(self):
         logging.debug("Asking user to purchase phone number...")
 
-        # Find number to purchase
-        choice = raw_input("Your CALLER_ID is not configured in your " \
-            "local_settings.  Purchase a new one? [y/n]").lower()
+        i = 0
         while True:
+            i = i + 1
+            # Find number to purchase
+            choice = raw_input("Your CALLER_ID is not configured in your " \
+                "local_settings.  Purchase a new one? [y/n]").lower()
             if choice == "y":
                 break
-            elif choice == "n":
+            elif choice == "n" or i >= 3:
                 raise ConfigurationError("To configure this " \
                         "hackpack CALLER_ID must set in local_settings or " \
                         "a phone number must be purchased.")
             else:
                 sys.stdout.write("Please choose yes or no with a 'y' or 'n'")
 
-        # Confirm phone number purchase.
-        choice = raw_input("Are you sure you want to purchase? " \
-            "Your Twilio account will be charged $1. [y/n]").lower()
+        logging.debug("Confirming purchase...")
+        i = 0
         while True:
+            i = i + 1
+            # Confirm phone number purchase.
+            choice = raw_input("Are you sure you want to purchase? " \
+                "Your Twilio account will be charged $1. [y/n]").lower()
             if choice == "y":
                 try:
                     logging.debug("Purchasing phone number...")
@@ -232,7 +239,7 @@ class Configure(object):
                 except TwilioRestException, e:
                     raise ConfigurationError("Your Twilio app couldn't " \
                             "be created: %s" % e)
-            elif choice == "n":
+            elif choice == "n" or i >= 3:
                 raise ConfigurationError("To configure this " \
                         "hackpack CALLER_ID must set in local_settings or " \
                         "a phone number must be purchased.")

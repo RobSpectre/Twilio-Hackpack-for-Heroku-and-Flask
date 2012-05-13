@@ -276,3 +276,4 @@ hackpack.
 
 * [Timothée Boucher](http://www.timotheeboucher.com/) - idea for production
   branch
+* [Oscar](http://labcoder.com/) - Bug fix for user input

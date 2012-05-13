@@ -361,7 +361,7 @@ class InputTest(ConfigureTest):
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
-    def test_purchasePhoneNumberNegativeInput(self, MockPhoneNumbers,
+    def test_purchasePhoneNumberWtfInput(self, MockPhoneNumbers,
             MockPhoneNumber):
         # Mock the PhoneNumbers resource and its search and purchase methods
         mock_phone_number = MockPhoneNumber.return_value

@@ -29,7 +29,7 @@ def voice():
 @app.route('/sms', methods=['GET', 'POST'])
 def sms():
     response = twiml.Response()
-    response.sms("Congratulation! You deployed the Twilio Hackpack" \
+    response.sms("Congratulations! You deployed the Twilio Hackpack" \
             " for Heroku and Flask.")
     return str(response)
 

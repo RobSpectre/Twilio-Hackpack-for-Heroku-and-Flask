@@ -8,8 +8,6 @@ from flask import request
 from twilio import twiml
 from twilio.util import TwilioCapability
 
-import local_settings
-
 
 # Declare and configure application
 app = Flask(__name__, static_url_path='/static')
@@ -38,8 +36,8 @@ def sms():
 @app.route('/client')
 def client():
     configuration_error = None
-    for key in ['TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_APP_SID',
-            'TWILIO_CALLER_ID']:
+    for key in ('TWILIO_ACCOUNT_SID', 'TWILIO_AUTH_TOKEN', 'TWILIO_APP_SID',
+            'TWILIO_CALLER_ID'):
         if not app.config[key]:
             configuration_error = "Missing from local_settings.py: " \
                     "%s" % key

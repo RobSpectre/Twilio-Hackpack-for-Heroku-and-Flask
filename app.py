@@ -48,7 +48,8 @@ def client():
         capability.allow_client_incoming("joey_ramone")
         capability.allow_client_outgoing(app.config['TWILIO_APP_SID'])
         token = capability.generate()
-    return render_template('client.html', token=token,
+    params = {'token': token}
+    return render_template('client.html', params=params,
             configuration_error=configuration_error)
 
 
@@ -56,9 +57,9 @@ def client():
 @app.route('/')
 def index():
     params = {
-        'voice_request_url': url_for('.voice', _external=True),
-        'sms_request_url': url_for('.sms', _external=True),
-        'client_url': url_for('.client', _external=True)}
+        'Voice Request URL': url_for('.voice', _external=True),
+        'SMS Request URL': url_for('.sms', _external=True),
+        'Client URL': url_for('.client', _external=True)}
     return render_template('index.html', params=params)
 
 

@@ -13,7 +13,7 @@
 </script>
 <script type="text/javascript">
 
-  Twilio.Device.setup("{{ token }}");
+  Twilio.Device.setup("{{ params['token'] }}");
 
   Twilio.Device.ready(function (device) {
     $("#log").text("Ready");

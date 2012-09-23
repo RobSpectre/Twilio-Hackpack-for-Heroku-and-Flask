@@ -27,6 +27,7 @@ body, html {
 
 #content {
     width: 960px;
+    height: 250px;
     margin: 0 auto;
     padding: 70px 0 0 0;
 }

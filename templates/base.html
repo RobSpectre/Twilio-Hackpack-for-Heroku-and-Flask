@@ -22,7 +22,7 @@
   <div id="container">
     <header>
         <div id="header">
-        {% if params['config_errors'] %}
+        {% if configuration_error %}
         <h1 class="section-heading">Configuration Error</h1>
         {% else %}
         <h1 class="section-heading">{% block header %}{% endblock %}</h1>

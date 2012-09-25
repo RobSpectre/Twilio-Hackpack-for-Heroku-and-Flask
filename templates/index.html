@@ -16,7 +16,7 @@
     <dl id="url_list">
         {% for key, value in params.iteritems() %}
         <dt>{{key}}</dt>
-        <dd>{{value}}</dd>
+        <dd><a href="http://{{value}}">{{value}}</a></dd>
         {% endfor %}
     </dl>
 

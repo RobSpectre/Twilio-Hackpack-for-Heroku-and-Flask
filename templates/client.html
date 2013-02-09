@@ -49,19 +49,25 @@
 {% endif %}
 {% endblock %}
 
-{% block content %}
-<button class="call" onclick="call();">
-  Call
-</button>
+{% block header %}Nice!{% endblock %}
 
-<button class="hangup" onclick="hangup();">
-  Hangup
-</button>
-<div id="log">
-{% if configuration_error %}
-{{ configuration_error }}
-{% else %} 
-Loading pigeons...
-{% endif %}
+{% block message %}Try using Twilio Client on your new Twilio app{% endblock %}
+
+{% block content %}
+<div id="client-controls">
+    <button class="call" onclick="call();">
+      Call
+    </button>
+
+    <button class="hangup" onclick="hangup();">
+      Hangup
+    </button>
+    <div id="log">
+    {% if configuration_error %}
+    {{ configuration_error }}
+    {% else %} 
+    Loading pigeons...
+    {% endif %}
+    </div>
 </div>
 {% endblock %}

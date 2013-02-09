@@ -129,3 +129,7 @@ body, html {
 .footer a:hover {
     color: #FFF;
 }
+
+#client-controls {
+    margin: -300px 0 0 0;
+}

@@ -11,6 +11,7 @@ from flask import url_for
 from twilio import twiml
 from twilio.util import RequestValidator
 from twilio.util import TwilioCapability
+from urlobject import URLObject
 
 
 # Declare and configure application
@@ -25,7 +26,10 @@ def validate_twilio_request():
         return False
     signature = request.headers['X-Twilio-Signature']
     if 'CallSid' in request.form:
-        url = url_for('.voice', _external=True)
+        # See: http://www.twilio.com/docs/security#notes
+        url = URLObject(url_for('.voice', _external=True)).without_auth()
+        if request.is_secure:
+            url = url.without_port()
     elif 'SmsSid' in request.form:
         url = url_for('.sms', _external=True)
     else:

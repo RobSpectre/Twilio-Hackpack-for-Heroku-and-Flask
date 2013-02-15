@@ -1,54 +1,23 @@
 {% extends "base.html" %}
 
-{% block title %}Installation Success!{% endblock %}
+{% block title %}Successfully Deployed{% endblock %}
 
-{% block head %}
-<link rel="stylesheet" type="text/css"
-    href="http://static1.twilio.com/packages/base.css"/>
-<link rel="stylesheet" type="text/css"
-    href="http://static0.twilio.com/packages/buttons.css" />
-<link rel="stylesheet" type="text/css"
-    href="/static/styles/index.css" />
-{% endblock %}
+{% block header %}Success!{% endblock %}
+
+{% block message %}You deployed Twilio Hackpack for Heroku and Flask{% endblock %}
+
+{% block blurb %}Here are some helpful links to get you started:{% endblock
+%}
 
 {% block content %}
-<div id="container">
-    <header>
-        <div id="header">
-            <h1 class="section-heading">Success!</h1>
-        </div>
-    </header>
-    <section>
-        <div id="content">
-            <h2 class="section-heading">You deployed Twilio Hackpack
-                for Heroku and Flask.</h2>
-            <p class="blurb">Here are some important links:</p>
-            <a href="https://www.twilio.com/user/account/apps"
-               class="button">Configure Twilio</a>
-            <dl id="url_list">
-                <dt>Voice Request URL</dt>
-                <dd><a href="{{params['voice_request_url'] }}">
-                    {{params['voice_request_url'] }}</a></dd>
-                <dt>SMS Request URL</dt>
-                <dd><a href="{{params['sms_request_url'] }}">
-                    {{params['sms_request_url'] }}</a></dd>
-                <dt>Client URL</dt>
-                <dd><a href="{{params['client_url'] }}">
-                    {{params['client_url'] }}</a></dd>
-           </dl>
-        </div>
-    </section>
-    <footer>
-        <p class="footer">
-            Source on <a
-                href="https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask">Github</a>.
-            Released under <a
-                href="http://www.opensource.org/licenses/mit-license.html">
-                MIT license</a>.
-            Lovingly crafted by <a id="twiliocon-2011-link" 
-                href="http://www.meetup.com/Twilio/New-York-NY/">
-                Twilio New York</a>.
-        </p>
-    </footer>
-</div>
+    <a href="https://www.twilio.com/user/account/phone-numbers/incoming"
+       class="button">Configure Twilio</a>
+
+    <dl id="url_list">
+        {% for key, value in params.iteritems() %}
+        <dt>{{key}}</dt>
+        <dd><a href="{{value}}">{{value}}</a></dd>
+        {% endfor %}
+    </dl>
+
 {% endblock %}

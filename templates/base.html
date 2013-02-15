@@ -4,6 +4,12 @@
       <title>{% block title %}{% endblock %} 
           - Twilio Hackpack for Heroku and Flask</title>
     {% block head %}{% endblock %}
+    <link rel="stylesheet" type="text/css"
+        href="http://static1.twilio.com/packages/base.css"/>
+    <link rel="stylesheet" type="text/css"
+        href="http://static0.twilio.com/packages/buttons.css" />
+    <link rel="stylesheet" type="text/css"
+        href="/static/styles/index.css" />
     <link rel="shortcut icon" href="/static/images/favicon.ico" />
     <link rel="apple-touch-icon"
         href="http://static1.twilio.com/packages/favicons/img/Twilio_57.png" />
@@ -13,6 +19,47 @@
         href="http://static0.twilio.com/packages/favicons/img/Twilio_114.png" />
   </head>
   <body>
-      {% block content %}{% endblock %}
-  </body>
+  <div id="container">
+    <header>
+        <div id="header">
+        {% if configuration_error %}
+        <h1 class="section-heading">Configuration Error</h1>
+        {% else %}
+        <h1 class="section-heading">{% block header %}{% endblock %}</h1>
+        {% endif %}
+        </div>
+    </header>
+    <section>
+        <div id="content">
+        {% if configuration_error %}
+            <h2 class="section-heading">We just need to set a few more
+                configuration options.</h2>
+            <p class="blurb">Check your local_settings.py to set these missing
+                options:</p>
+            <dl id="url_list">
+                <dt>Error</dt>
+                <dd>{{ configuration_error }}</dd>
+            </dl>
+        {% else %}
+        <h2 class="section-heading">{% block message %}{% endblock %}</h2>
+        <p class="blurb">{% block blurb %}{% endblock %}</p>
+        {% block content %}{% endblock %}
+        {% endif %}
+        </div>
+    </section>
+    <footer>
+        <p class="footer">
+            Source on <a
+                href="https://github.com/RobSpectre/Mobile-App-Distribution-with-SMS">Github</a>.
+            Released under <a
+                href="http://www.opensource.org/licenses/mit-license.html">
+                MIT license</a>.
+            Lovingly crafted by <a id="twiliocon-2011-link" 
+                href="http://www.meetup.com/Twilio/New-York-NY/">
+                Twilio New York</a>.
+        </p>
+    </footer>
+  </div>
+  {% block footer_js %}{% endblock %}
+</body>
 </html>

@@ -277,3 +277,6 @@ hackpack.
 * [Timothée Boucher](http://www.timotheeboucher.com/) - idea for production
   branch
 * [Oscar](http://labcoder.com/) - Bug fix for user input
+* [Zachary
+  Woase](http://zacharyvoase.com/) - [Twilio signature
+  validation](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/pull/7) for production branch.

@@ -66,6 +66,7 @@ def client_incoming():
         else:
             r.client("jenny")
 
+    return str(resp)
 
 
 # Installation success page

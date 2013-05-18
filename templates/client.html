@@ -7,7 +7,7 @@
   type="text/css" rel="stylesheet" />
 {% if not configuration_error %}
 <script type="text/javascript"
-  src="http://static.twilio.com/libs/twiliojs/1.0/twilio.min.js"></script>
+  src="http://static.twilio.com/libs/twiliojs/1.1/twilio.min.js"></script>
 <script type="text/javascript"
   src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
 </script>
@@ -38,9 +38,11 @@
   });
 
   function call() {
-    // get the phone number to connect the call to
-    Twilio.Device.connect();
+      // get the phone number to connect the call to
+      params = {"PhoneNumber": $("#number").val()};
+      Twilio.Device.connect(params);
   }
+ 
 
   function hangup() {
     Twilio.Device.disconnectAll();
@@ -62,6 +64,10 @@
     <button class="hangup" onclick="hangup();">
       Hangup
     </button>
+
+    <input type="text" id="number" name="number"
+      placeholder="Enter a phone number to call"/>
+
     <div id="log">
     {% if configuration_error %}
     {{ configuration_error }}

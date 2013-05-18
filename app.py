@@ -1,4 +1,5 @@
 import os
+import re
 
 from flask import Flask
 from flask import render_template
@@ -51,6 +52,20 @@ def client():
     params = {'token': token}
     return render_template('client.html', params=params,
             configuration_error=configuration_error)
+
+@app.route('/client/incoming', methods=['POST'])
+def client_incoming():
+    from_number = request.values.get('PhoneNumber', None)
+
+    resp = twiml.Response()
+
+    with resp.dial(callerId=app.config['TWILIO_CALLER_ID']) as r:
+        # If we have a number, and it looks like a phone number:
+        if from_number and re.search('^[\d\(\)\- \+]+$', from_number):
+            r.number(from_number)
+        else:
+            r.client("jenny")
+
 
 
 # Installation success page

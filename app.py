@@ -43,6 +43,7 @@ def client():
             configuration_error = "Missing from local_settings.py: " \
                     "%s" % key
             token = None
+
     if not configuration_error:
         capability = TwilioCapability(app.config['TWILIO_ACCOUNT_SID'],
             app.config['TWILIO_AUTH_TOKEN'])
@@ -55,18 +56,40 @@ def client():
 
 @app.route('/client/incoming', methods=['POST'])
 def client_incoming():
-    from_number = request.values.get('PhoneNumber', None)
+    try:
+        from_number = request.values.get('PhoneNumber', None)
 
-    resp = twiml.Response()
+        resp = twiml.Response()
 
-    with resp.dial(callerId=app.config['TWILIO_CALLER_ID']) as r:
-        # If we have a number, and it looks like a phone number:
-        if from_number and re.search('^[\d\(\)\- \+]+$', from_number):
-            r.number(from_number)
-        else:
-            r.client("jenny")
+        if not from_number:
+            resp.say(
+                "Your app is missing a Phone Number. "
+                "Make a request with a Phone Number to make outgoing calls with "
+                "the Twilio hack pack.")
+            return str(resp)
 
-    return str(resp)
+        if 'TWILIO_CALLER_ID' not in app.config:
+            resp.say(
+                "Your app is missing a Caller ID parameter. "
+                "Please add a Caller ID to make outgoing calls with Twilio Client")
+            return str(resp)
+
+        with resp.dial(callerId=app.config['TWILIO_CALLER_ID']) as r:
+            # If we have a number, and it looks like a phone number:
+            if from_number and re.search('^[\d\(\)\- \+]+$', from_number):
+                r.number(from_number)
+            else:
+                r.say("We couldn't find a phone number to dial. Make sure you are "
+                      "sending a Phone Number when you make a request with Twilio "
+                      "Client")
+
+        return str(resp)
+
+    except:
+        resp = twiml.Response()
+        resp.say("An error occurred. Check your debugger at twilio dot com "
+                 "for more information.")
+        return str(resp)
 
 
 # Installation success page

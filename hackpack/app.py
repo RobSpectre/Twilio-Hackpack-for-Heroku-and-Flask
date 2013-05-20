@@ -8,8 +8,6 @@ from flask import request
 from twilio import twiml
 from twilio.util import TwilioCapability
 
-from hackpack import app
-
 # Declare and configure application
 app = Flask(__name__, static_url_path='/static')
 app.config.from_pyfile('local_settings.py')

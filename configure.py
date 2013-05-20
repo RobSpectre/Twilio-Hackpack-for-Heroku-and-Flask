@@ -22,14 +22,13 @@ Deploy to custom domain:
 '''
 
 from optparse import OptionParser
-import sys
 import subprocess
 import logging
 
 from twilio.rest import TwilioRestClient
 from twilio import TwilioRestException
 
-import local_settings
+from hackpack import local_settings
 
 
 class Configure(object):

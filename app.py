@@ -1,6 +1,6 @@
 import os
 
-from hackpack import app
+from hackpack.app import app
 
 # If PORT not specified by environment, assume development config.
 if __name__ == '__main__':

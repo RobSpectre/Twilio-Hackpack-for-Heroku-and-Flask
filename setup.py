@@ -7,6 +7,7 @@ setup(name='hackpack',
       author_email='help@twilio.com',
       description='twilio heroku hackpack',
       include_package_data=True,
+      zip_safe=False,
       install_requires=[
         'flask>=0.9',
         'twilio>=3.4.3',

@@ -277,3 +277,7 @@ hackpack.
 * [Timothée Boucher](http://www.timotheeboucher.com/) - idea for production
   branch
 * [Oscar](http://labcoder.com/) - Bug fix for user input
+
+[![githalytics.com
+alpha](https://cruel-carlota.pagodabox.com/33a5ddd61dd29dd933422bca2b3dfa0e
+"githalytics.com")](http://githalytics.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)

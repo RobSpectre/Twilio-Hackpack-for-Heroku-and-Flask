@@ -1,5 +1,5 @@
 Flask>=0.9
-twilio>=3.4.3
+twilio>=3.5.1
 mock>=0.8.0
 nose>=1.1.2
 URLObject>=2.1.0

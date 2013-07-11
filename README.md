@@ -280,3 +280,8 @@ hackpack.
 * [Zachary
   Woase](http://zacharyvoase.com/) - [Twilio signature
   validation](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/pull/7) for production branch.
+
+
+[![githalytics.com
+alpha](https://cruel-carlota.pagodabox.com/33a5ddd61dd29dd933422bca2b3dfa0e
+"githalytics.com")](http://githalytics.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)

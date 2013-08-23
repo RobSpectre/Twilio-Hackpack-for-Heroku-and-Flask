@@ -4,7 +4,7 @@ body, html {
 
 #container {
     height: 800px;
-    background: url("http://static0.twilio.com/packages/twilio-conference/img/twiliocon-2012-bg.png") no-repeat center top;
+    background: url("//static0.twilio.com/packages/twilio-conference/img/twiliocon-2012-bg.png") no-repeat center top;
 }
 
 #header {
@@ -22,7 +22,7 @@ body, html {
     font-weight: 100;
     color: #FFF;
     text-align: center;
-    background: url("http://static0.twilio.com/packages/twilio-conference/img/twilio-logo-2012-header.png") no-repeat 148px center;
+    background: url("//static0.twilio.com/packages/twilio-conference/img/twilio-logo-2012-header.png") no-repeat 148px center;
 }
 
 #content {

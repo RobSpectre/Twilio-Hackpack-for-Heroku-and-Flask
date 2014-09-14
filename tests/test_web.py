@@ -33,21 +33,21 @@ class ExampleTests(WebTest):
                                  data={'PhoneNumber': '16667778888'})
         self.assertEqual("200 OK", response.status)
         self.assertTrue(b"</Dial>" in response.data, "Could not find <Dial>"
-                        "in response: {}".format(response.data))
+                        "in response: {0}".format(response.data))
         self.assertTrue(b'16667778888' in response.data, "Could not find "
-                        "inputted phone number: {}".format(response.data))
+                        "inputted phone number: {0}".format(response.data))
 
     def test_client_incoming_no_phone_number(self):
         response = self.app.post('/client/incoming')
         self.assertEqual("200 OK", response.status)
         self.assertFalse(b"<Dial>" in response.data, "Found <Dial>"
                          "in response when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertFalse(b'16667778888' in response.data, "Found "
                          "inputted phone number when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertTrue(b'<Say>' in response.data, "Did not find "
-                        "error message in response: {}".format(response.data))
+                        "error message in response: {0}".format(response.data))
 
     def test_client_incoming_no_caller_id(self):
         app.config.pop("TWILIO_CALLER_ID", None)
@@ -56,12 +56,12 @@ class ExampleTests(WebTest):
         self.assertEqual("200 OK", response.status)
         self.assertFalse(b"<Dial>" in response.data, "Found <Dial>"
                          "in response when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertFalse(b'16667778888' in response.data, "Found "
                          "inputted phone number when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertTrue(b'<Say>' in response.data, "Did not find "
-                        "error message in response: {}".format(response.data))
+                        "error message in response: {0}".format(response.data))
 
     def test_client_incoming_incorrect_number(self):
         response = self.app.post('/client/incoming',
@@ -69,9 +69,9 @@ class ExampleTests(WebTest):
         self.assertEqual("200 OK", response.status)
         self.assertFalse(b"<Dial>" in response.data, "Found <Dial>"
                          "in response when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertFalse(b'16667778888' in response.data, "Found "
                          "inputted phone number when should have returned "
-                         "error: {}".format(response.data))
+                         "error: {0}".format(response.data))
         self.assertTrue(b'<Say>' in response.data, "Did not find "
-                        "error message in response: {}".format(response.data))
+                        "error message in response: {0}".format(response.data))

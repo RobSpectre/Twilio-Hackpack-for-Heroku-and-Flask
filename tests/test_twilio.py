@@ -14,7 +14,7 @@ class TwiMLTest(unittest.TestCase):
     def assertTwiML(self, response):
         app.logger.info(response.data)
         self.assertTrue(b"</Response>" in response.data, "Did not find "
-                        "</Response>: {}".format(response.data))
+                        "</Response>: {0}".format(response.data))
         self.assertEqual("200 OK", response.status)
 
     def sms(self, body, url='/sms', to=app.config['TWILIO_CALLER_ID'],

@@ -71,10 +71,10 @@ class Configure(object):
         if "://" not in self.voice_url:
             self.voice_url = self.host + self.voice_url
             logging.debug("Setting voice_url with host: "
-                          "{}".format(self.voice_url))
+                          "{0}".format(self.voice_url))
         if "://" not in self.sms_url:
             self.sms_url = self.host + self.sms_url
-            logging.debug("Setting sms_url with host: {}".format(self.sms_url))
+            logging.debug("Setting sms_url with host: {0}".format(self.sms_url))
 
         if self.configureHackpack(self.voice_url, self.sms_url,
                                   self.app_sid, self.phone_number):
@@ -89,7 +89,7 @@ class Configure(object):
             # Ensure local environment variables are set.
             self.printLocalEnvironmentVariableCommands(**configuration)
 
-            logging.info("Hackpack is now configured.  Call {} to "
+            logging.info("Hackpack is now configured.  Call {0} to "
                          "test!".format(self.friendly_phone_number))
         else:
             logging.error("There was an error configuring your hackpack. "
@@ -111,8 +111,8 @@ class Configure(object):
             number = self.retrievePhoneNumber(phone_number)
 
         # Configure phone number to use App Sid.
-        logging.info("Setting {} to use application sid: "
-                     "{}".format(number.friendly_name, app.sid))
+        logging.info("Setting {0} to use application sid: "
+                     "{0}".format(number.friendly_name, app.sid))
         try:
             self.client.phone_numbers.update(number.sid,
                                              voice_application_sid=app.sid,
@@ -121,7 +121,7 @@ class Configure(object):
         except TwilioException as e:
             raise ConfigurationError("An error occurred setting the "
                                      "application sid for "
-                                     "{}: {}".format(number.friendly_name, e))
+                                     "{0}: {1}".format(number.friendly_name, e))
 
         # We're done!
         if number:
@@ -153,7 +153,7 @@ class Configure(object):
                     break
                 except TwilioException as e:
                     raise ConfigurationError("Your Twilio app couldn't "
-                                             "be created: {}".format(e))
+                                             "be created: {0}".format(e))
             elif choice == "n" or i >= 3:
                 raise ConfigurationError("Your APP_SID setting must be  "
                                          "set in local_settings.")
@@ -169,7 +169,7 @@ class Configure(object):
 
     def setAppRequestUrls(self, app_sid, voice_url, sms_url):
         logging.info("Setting request urls for application sid: "
-                     "{}".format(app_sid))
+                     "{0}".format(app_sid))
 
         try:
             app = self.client.applications.update(app_sid, voice_url=voice_url,
@@ -180,10 +180,10 @@ class Configure(object):
         except TwilioException as e:
             if "HTTP ERROR 404" in str(e):
                 raise ConfigurationError("This application sid was not "
-                                         "found: {}".format(app_sid))
+                                         "found: {0}".format(app_sid))
             else:
                 raise ConfigurationError("An error setting the request URLs "
-                                         "occured: {}".format(e))
+                                         "occured: {0}".format(e))
         if app:
             logging.debug("Updated application sid: %s " % app.sid)
             return app
@@ -198,14 +198,14 @@ class Configure(object):
             number = self.client.phone_numbers.list(phone_number=phone_number)
         except TwilioException as e:
             raise ConfigurationError("An error setting the request URLs "
-                                     "occured: {}".format(e))
+                                     "occured: {0}".format(e))
         if number:
             logging.debug("Retrieved sid: %s" % number[0].sid)
             self.friendly_phone_number = number[0].friendly_name
             return number[0]
         else:
             raise ConfigurationError("An unknown error occurred retrieving "
-                                     "number: {}".format(phone_number))
+                                     "number: {0}".format(phone_number))
 
     def purchasePhoneNumber(self):
         logging.debug("Asking user to purchase phone number...")
@@ -245,7 +245,7 @@ class Configure(object):
                     break
                 except TwilioException as e:
                     raise ConfigurationError("Your Twilio app couldn't "
-                                             "be created: {}".format(e))
+                                             "be created: {0}".format(e))
             elif choice == "n" or i >= 3:
                 raise ConfigurationError("To configure this hackpack "
                                          "CALLER_ID must set in "
@@ -266,14 +266,14 @@ class Configure(object):
 
     def getHerokuHostname(self, git_config_path='./.git/config'):
         logging.debug("Getting hostname from git configuration file: "
-                      "{}".format(git_config_path))
+                      "{0}".format(git_config_path))
         # Load git configuration
         try:
             logging.debug("Loading git config...")
             git_config = open(git_config_path).readlines()
         except IOError as e:
             raise ConfigurationError("Could not find .git config.  Does it "
-                                     "still exist? Failed path: {}".format(e))
+                                     "still exist? Failed path: {0}".format(e))
 
         logging.debug("Finding Heroku remote in git configuration...")
         subdomain = None
@@ -298,11 +298,11 @@ class Configure(object):
         print("\n")
         for k, v in kwargs.items():
             if v:
-                print("export {}={}\n".format(k, v))
+                print("export {0}={1}\n".format(k, v))
 
     def setHerokuEnvironmentVariables(self, **kwargs):
         logging.info("Setting Heroku environment variables...")
-        envvars = ["{}={}".format(k, v) for k, v in kwargs.items() if v]
+        envvars = ["{0}={1}".format(k, v) for k, v in kwargs.items() if v]
         envvars.insert(0, "heroku")
         envvars.insert(1, "config:add")
         return subprocess.call(envvars)

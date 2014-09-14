@@ -329,16 +329,16 @@ class HerokuTest(ConfigureTest):
         args, kwargs = mock_call.call_args
         self.assertTrue("heroku" in args[0],
                         "Heroku toolbelt not present in call: "
-                        "{}".format(args[0]))
+                        "{0}".format(args[0]))
         self.assertTrue("config:add" in args[0],
                         "Config:add not present in call: "
-                        "{}".format(args[0]))
+                        "{0}".format(args[0]))
 
-        config = ["{}={}".format(k, v) for k, v in configuration.items()]
+        config = ["{0}={1}".format(k, v) for k, v in configuration.items()]
         for item in config:
             self.assertTrue(item in args[0],
-                            "Missing config from call_args: {} Instead got: "
-                            "{}".format(item, args[0]))
+                            "Missing config from call_args: {0} Instead got: "
+                            "{0}".format(item, args[0]))
 
 
 class MiscellaneousTest(unittest.TestCase):

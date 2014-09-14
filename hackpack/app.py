@@ -39,7 +39,7 @@ def client():
                 'TWILIO_CALLER_ID'):
         if not app.config.get(key, None):
             configuration_error = "Missing from local_settings.py: " \
-                                  "{}".format(key)
+                                  "{0}".format(key)
             token = None
 
     if not configuration_error:

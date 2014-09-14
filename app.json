@@ -25,13 +25,6 @@
             "description": "A Twilio number assigned to your account in E.164 format, found here: https://www.twilio.com/user/account/phone-numbers/incoming",
             "value": "+15556667777"
         },
-        "TWILIO_APP_SID": {
-            "description": "A TwiML app assigned to your account to use Twilio Client, found here: https://www.twilio.com/user/account/apps",
-            "value": "APzzzzzzzzzzzzzzzzz"
-        }
-    },
-    "scripts": {
-        "postdeploy": "make configure"
     },
     "success_url": "/"
 }

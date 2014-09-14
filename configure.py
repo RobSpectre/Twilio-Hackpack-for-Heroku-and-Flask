@@ -160,7 +160,7 @@ class Configure(object):
             else:
                 logging.error("Please choose yes or no with a 'y' or 'n'")
         if app:
-            logging.info("Application created: %s" % app.sid)
+            logging.info("Application created: {0}".format(app.sid))
             self.app_sid = app.sid
             return app
         else:
@@ -185,22 +185,23 @@ class Configure(object):
                 raise ConfigurationError("An error setting the request URLs "
                                          "occured: {0}".format(e))
         if app:
-            logging.debug("Updated application sid: %s " % app.sid)
+            logging.debug("Updated application sid: {0}".format(app.sid))
             return app
         else:
             raise ConfigurationError("An unknown error occuring "
                                      "configuring request URLs for app sid.")
 
     def retrievePhoneNumber(self, phone_number):
-        logging.debug("Retrieving phone number: %s" % phone_number)
+        logging.debug("Retrieving phone number: {0}".format(phone_number))
         try:
-            logging.debug("Getting sid for phone number: %s" % phone_number)
+            logging.debug("Getting sid for phone number: "
+                          "{0}".format(phone_number))
             number = self.client.phone_numbers.list(phone_number=phone_number)
         except TwilioException as e:
             raise ConfigurationError("An error setting the request URLs "
                                      "occured: {0}".format(e))
         if number:
-            logging.debug("Retrieved sid: %s" % number[0].sid)
+            logging.debug("Retrieved sid: {0}".format(number[0].sid))
             self.friendly_phone_number = number[0].friendly_name
             return number[0]
         else:
@@ -240,8 +241,8 @@ class Configure(object):
                     logging.debug("Purchasing phone number...")
                     number = self.client.phone_numbers.purchase(area_code="6"
                                                                           "46")
-                    logging.debug("Phone number purchased: %s" %
-                                  number.friendly_name)
+                    logging.debug("Phone number purchased: "
+                                  "{0}".format(number.friendly_name))
                     break
                 except TwilioException as e:
                     raise ConfigurationError("Your Twilio app couldn't "
@@ -256,7 +257,8 @@ class Configure(object):
 
         # Return number or error out.
         if number:
-            logging.debug("Returning phone number: %s " % number.friendly_name)
+            logging.debug("Returning phone number: "
+                          "{0}".format(number.friendly_name))
             self.phone_number = number.phone_number
             self.friendly_phone_number = number.friendly_name
             return number
@@ -281,11 +283,11 @@ class Configure(object):
             if "git@heroku.com" in line:
                 s = line.split(":")
                 subdomain = s[1].replace('.git', '')
-                logging.debug("Heroku remote found: %s" % subdomain)
+                logging.debug("Heroku remote found: {0}".format(subdomain))
 
         if subdomain:
-            host = "http://%s.herokuapp.com" % subdomain.strip()
-            logging.debug("Returning full host: %s" % host)
+            host = "http://{0}.herokuapp.com".format(subdomain.strip())
+            logging.debug("Returning full host: {0}".format(host))
             return host
         else:
             raise ConfigurationError("Could not find Heroku remote in "

@@ -1,6 +1,4 @@
-Werkzeug==0.8.3
-Flask==0.9
-twilio>=3.5.1
-mock>=0.8.0
-nose>=1.1.2
+Flask==0.10.1
+tox==1.7.2
+twilio==3.6.7
 URLObject>=2.1.0

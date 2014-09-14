@@ -14,7 +14,7 @@
        class="button">Configure Twilio</a>
 
     <dl id="url_list">
-        {% for key, value in params.iteritems() %}
+        {% for key, value in params.items() %}
         <dt>{{key}}</dt>
         <dd><a href="{{value}}">{{value}}</a></dd>
         {% endfor %}

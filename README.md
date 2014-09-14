@@ -6,6 +6,8 @@ Heroku.  Easy to clone, easy to tweak, easy to deploy.
 [![Build
 Status](https://secure.travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.png)]
 (http://travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
+[![Coverage Status](https://coveralls.io/repos/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/badge.png)]
+(https://coveralls.io/r/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
 
 
 ## Features
@@ -24,8 +26,9 @@ Look at all these crazy features!
   and usage a breeze.
 * Boilerplate - All the Flask app boilerplate with example Voice and SMS 
   Request URLs ready for use on Twilio.
-* Testing - Easy base class for unit testing with example tests, nose ready.
+* Testing - Easy base class for unit testing with example tests, tox ready.
 * PEP8 - It's good for you!
+* Python 2 and 3 - It's better for you!
 
 
 ## Usage
@@ -33,6 +36,8 @@ Look at all these crazy features!
 This hackpack ships with two ready-to-go endpoints for your Twilio Voice and SMS
 apps.  The two routes /voice and /sms contain two examples you can modify
 easily.
+
+To start tweaking your hackpack, just edit `hackpack/app.py`.
 
 For example, here is a quick Twilio Voice app that plays some Ramones.
 
@@ -106,7 +111,7 @@ git clone git://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git
 
 2) Navigate to folder and create new Heroku Cedar app
 <pre>
-heroku create --stack cedar
+heroku create
 </pre>
 
 3) Deploy to Heroku
@@ -211,7 +216,7 @@ foreman start
 
 3) Open browser to [http://localhost:5000](http://localhost:5000).
 
-4) Tweak away on `app.py`.
+4) Tweak away on `hackpack/app.py`.
 
 
 ## Testing
@@ -277,6 +282,12 @@ hackpack.
 * [Timothée Boucher](http://www.timotheeboucher.com/) - idea for production
   branch
 * [Oscar](http://labcoder.com/) - Bug fix for user input
+* [Zachary
+  Woase](http://zacharyvoase.com/) - [Twilio signature
+  validation](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/pull/7) for production branch.
+* [Kevin Burke](http://www.twentymilliseconds.com/) - Better FTU for Twilio
+  Client.
+
 
 [![githalytics.com
 alpha](https://cruel-carlota.pagodabox.com/33a5ddd61dd29dd933422bca2b3dfa0e

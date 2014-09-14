@@ -1,6 +1,7 @@
 language: python
 install:
   - pip install tox
+  - pip install coveralls
 script:
   - tox
 env:

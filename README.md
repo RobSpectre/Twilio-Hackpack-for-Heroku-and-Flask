@@ -10,6 +10,11 @@ Status](https://secure.travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-F
 (https://coveralls.io/r/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
 
 
+Deploy this hackpack to Heroku now!
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
+
+
 ## Features
 
 Look at all these crazy features!
@@ -101,6 +106,12 @@ def gather():
 ## Installation
 
 Step-by-step on how to deploy, configure and develop on this hackpack.
+
+### Fastest Deploy
+
+Use Heroku to deploy this hackpack immediately:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
 
 ### Getting Started 
 

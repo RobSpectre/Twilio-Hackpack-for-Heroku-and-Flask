@@ -30,5 +30,8 @@
             "value": "APzzzzzzzzzzzzzzzzz"
         }
     },
+    "scripts": {
+        "postdeploy": "make configure"
+    },
     "success_url": "/"
 }

@@ -12,10 +12,9 @@ class TwiMLTest(unittest.TestCase):
         self.app = app.test_client()
 
     def assertTwiML(self, response):
-        self.assertTrue("<Response>" in response.data, "Did not find " \
-                "<Response>: %s" % response.data)
-        self.assertTrue("</Response>" in response.data, "Did not find " \
-                "</Response>: %s" % response.data)
+        app.logger.info(response.data)
+        self.assertTrue(b"</Response>" in response.data, "Did not find "
+                        "</Response>: {}".format(response.data))
         self.assertEqual("200 OK", response.status)
 
     def sms(self, body, url='/sms', to=app.config['TWILIO_CALLER_ID'],
@@ -35,7 +34,7 @@ class TwiMLTest(unittest.TestCase):
         return self.app.post(url, data=params)
 
     def call(self, url='/voice', to=app.config['TWILIO_CALLER_ID'],
-            from_='+15558675309', digits=None, extra_params=None):
+             from_='+15558675309', digits=None, extra_params=None):
         params = {
             'CallSid': 'CAtesting',
             'AccountSid': app.config['TWILIO_ACCOUNT_SID'],

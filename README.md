@@ -6,6 +6,8 @@ Heroku.  Easy to clone, easy to tweak, easy to deploy.
 [![Build
 Status](https://secure.travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.png)]
 (http://travis-ci.org/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
+[![Coverage Status](https://coveralls.io/repos/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/badge.png)]
+(https://coveralls.io/r/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask)
 
 
 ## Features
@@ -106,7 +108,7 @@ git clone git://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask.git
 
 2) Navigate to folder and create new Heroku Cedar app
 <pre>
-heroku create --stack cedar
+heroku create
 </pre>
 
 3) Deploy to Heroku
@@ -211,7 +213,7 @@ foreman start
 
 3) Open browser to [http://localhost:5000](http://localhost:5000).
 
-4) Tweak away on `app.py`.
+4) Tweak away on `hackpack/app.py`.
 
 
 ## Testing

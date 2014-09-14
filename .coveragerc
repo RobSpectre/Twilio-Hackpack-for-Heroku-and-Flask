@@ -1,0 +1,6 @@
+[run]
+source = hackpack 
+[report]
+omit =
+    */python?.?/*
+    */site-packages/nose/*

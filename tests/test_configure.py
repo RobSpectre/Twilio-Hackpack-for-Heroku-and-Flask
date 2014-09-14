@@ -10,13 +10,12 @@ from .context import configure
 
 class ConfigureTest(unittest.TestCase):
     def setUp(self):
-        self.configure = configure.Configure(
-                account_sid="ACxxxxx",
-                auth_token="yyyyyyyy",
-                phone_number="+15555555555",
-                app_sid="APzzzzzzzzz")
+        self.configure = configure.Configure(account_sid="ACxxxxx",
+                                             auth_token="yyyyyyyy",
+                                             phone_number="+15555555555",
+                                             app_sid="APzzzzzzzzz")
         self.configure.client = TwilioRestClient(self.configure.account_sid,
-                self.configure.auth_token)
+                                                 self.configure.auth_token)
 
 
 class TwilioTest(ConfigureTest):
@@ -33,13 +32,14 @@ class TwilioTest(ConfigureTest):
 
         # Test
         self.configure.createNewTwiMLApp(self.configure.voice_url,
-                self.configure.sms_url)
+                                         self.configure.sms_url)
 
         # Assert
-        self.configure.client.applications.create.assert_called_once_with(
-                voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url,
-                friendly_name="Hackpack for Heroku and Flask")
+        app_create = self.configure.client.applications.create
+        app_create.assert_called_once_with(voice_url=self.configure.voice_url,
+                                           sms_url=self.configure.sms_url,
+                                           friendly_name="Hackpack for Heroku "
+                                                         "and Flask")
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -54,8 +54,9 @@ class TwilioTest(ConfigureTest):
 
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
-                self.configure.createNewTwiMLApp,
-                self.configure.voice_url, self.configure.sms_url)
+                          self.configure.createNewTwiMLApp,
+                          self.configure.voice_url,
+                          self.configure.sms_url)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
@@ -67,32 +68,32 @@ class TwilioTest(ConfigureTest):
 
         # Test
         self.configure.setAppRequestUrls(self.configure.app_sid,
-                self.configure.voice_url,
-                self.configure.sms_url)
+                                         self.configure.voice_url,
+                                         self.configure.sms_url)
 
         # Assert
-        self.configure.client.applications.update.assert_called_once_with(
-                self.configure.app_sid,
-                voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url,
-                friendly_name='Hackpack for Heroku and Flask')
+        app_create = self.configure.client.applications.update
+        app_create.assert_called_once_with(self.configure.app_sid,
+                                           voice_url=self.configure.voice_url,
+                                           sms_url=self.configure.sms_url,
+                                           friendly_name='Hackpack for Heroku '
+                                                         'and Flask')
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_retrievePhoneNumber(self, MockPhoneNumber, MockPhoneNumbers):
         # Mock the PhoneNumbers resource and its list method.
-        mock_phone_number = MockPhoneNumber.return_value
-        mock_phone_number.phone_number = self.configure.phone_number
+        mock_num = MockPhoneNumber.return_value
+        mock_num.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.list.return_value = \
-                [mock_phone_number]
+        self.configure.client.phone_numbers.list.return_value = [mock_num]
 
         # Test
         self.configure.retrievePhoneNumber(self.configure.phone_number)
 
         # Assert
-        self.configure.client.phone_numbers.list.assert_called_once_with(
-                phone_number=self.configure.phone_number)
+        num_l = self.configure.client.phone_numbers.list
+        num_l.assert_called_once_with(phone_number=self.configure.phone_number)
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
@@ -101,8 +102,7 @@ class TwilioTest(ConfigureTest):
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.purchase = \
-                mock_phone_number
+        self.configure.client.phone_numbers.purchase = mock_phone_number
 
         # Mock our input.
         configure.raw_input = lambda _: 'y'
@@ -111,33 +111,32 @@ class TwilioTest(ConfigureTest):
         self.configure.purchasePhoneNumber()
 
         # Assert
-        self.configure.client.phone_numbers.purchase.assert_called_once_with(
-                area_code="646")
+        purchase = self.configure.client.phone_numbers.purchase
+        purchase.assert_called_once_with(area_code="646")
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_purchasePhoneNumberNegativeInput(self, MockPhoneNumbers,
-            MockPhoneNumber):
+                                              MockPhoneNumber):
         # Mock the PhoneNumbers resource and its search and purchase methods
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.purchase = \
-                mock_phone_number
+        self.configure.client.phone_numbers.purchase = mock_phone_number
 
         # Mock our input.
         configure.raw_input = lambda _: 'n'
 
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
-                self.configure.purchasePhoneNumber)
+                          self.configure.purchasePhoneNumber)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_configure(self, MockPhoneNumber, MockPhoneNumbers, MockApp,
-            MockApps):
+                       MockApps):
         # Mock the Applications resource and its update method.
         mock_app = MockApp.return_value
         mock_app.sid = self.configure.app_sid
@@ -156,28 +155,30 @@ class TwilioTest(ConfigureTest):
 
         # Test
         self.configure.configureHackpack(self.configure.voice_url,
-                self.configure.sms_url,
-                self.configure.app_sid,
-                self.configure.phone_number)
+                                         self.configure.sms_url,
+                                         self.configure.app_sid,
+                                         self.configure.phone_number)
 
         # Assert
-        self.configure.client.applications.update.assert_called_once_with(
-                self.configure.app_sid,
-                voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url,
-                friendly_name='Hackpack for Heroku and Flask')
+        apps = self.configure.client.applications.update
+        apps.assert_called_once_with(self.configure.app_sid,
+                                     voice_url=self.configure.voice_url,
+                                     sms_url=self.configure.sms_url,
+                                     friendly_name='Hackpack for Heroku '
+                                                   'and Flask')
 
-        self.configure.client.phone_numbers.update.assert_called_once_with(
-                "PN123",
-                voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid)
+        update = self.configure.client.phone_numbers.update
+        app_sid = self.configure.app_sid
+        update.assert_called_once_with("PN123",
+                                       voice_application_sid=app_sid,
+                                       sms_application_sid=app_sid)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_configureNoApp(self, MockPhoneNumber, MockPhoneNumbers, MockApp,
-            MockApps):
+                            MockApps):
         # Mock the Applications resource and its update method.
         mock_app = MockApp.return_value
         mock_app.sid = self.configure.app_sid
@@ -202,27 +203,28 @@ class TwilioTest(ConfigureTest):
 
         # Test
         self.configure.configureHackpack(self.configure.voice_url,
-                self.configure.sms_url,
-                self.configure.app_sid,
-                self.configure.phone_number)
+                                         self.configure.sms_url,
+                                         self.configure.app_sid,
+                                         self.configure.phone_number)
 
         # Assert
-        self.configure.client.applications.create.assert_called_once_with(
-                voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url,
-                friendly_name="Hackpack for Heroku and Flask")
+        create = self.configure.client.applications.create
+        create.assert_called_once_with(voice_url=self.configure.voice_url,
+                                       sms_url=self.configure.sms_url,
+                                       friendly_name="Hackpack for Heroku "
+                                                     "and Flask")
 
-        self.configure.client.phone_numbers.update.assert_called_once_with(
-                "PN123",
-                voice_application_sid=mock_app.sid,
-                sms_application_sid=mock_app.sid)
+        update = self.configure.client.phone_numbers.update
+        update.assert_called_once_with("PN123",
+                                       voice_application_sid=mock_app.sid,
+                                       sms_application_sid=mock_app.sid)
 
     @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_configureNoPhoneNumber(self, MockPhoneNumber, MockPhoneNumbers,
-            MockApp, MockApps):
+                                    MockApp, MockApps):
         # Mock the Applications resource and its update method.
         mock_app = MockApp.return_value
         mock_app.sid = self.configure.app_sid
@@ -247,21 +249,23 @@ class TwilioTest(ConfigureTest):
 
         # Test
         self.configure.configureHackpack(self.configure.voice_url,
-                self.configure.sms_url,
-                self.configure.app_sid,
-                self.configure.phone_number)
+                                         self.configure.sms_url,
+                                         self.configure.app_sid,
+                                         self.configure.phone_number)
 
         # Assert
-        self.configure.client.applications.update.assert_called_once_with(
-                self.configure.app_sid,
-                voice_url=self.configure.voice_url,
-                sms_url=self.configure.sms_url,
-                friendly_name='Hackpack for Heroku and Flask')
+        update = self.configure.client.applications.update
+        update.assert_called_once_with(self.configure.app_sid,
+                                       voice_url=self.configure.voice_url,
+                                       sms_url=self.configure.sms_url,
+                                       friendly_name='Hackpack for Heroku '
+                                                     'and Flask')
 
-        self.configure.client.phone_numbers.update.assert_called_once_with(
-                "PN123",
-                voice_application_sid=self.configure.app_sid,
-                sms_application_sid=self.configure.app_sid)
+        update = self.configure.client.phone_numbers.update
+        app_sid = self.configure.app_sid
+        update.assert_called_once_with("PN123",
+                                       voice_application_sid=app_sid,
+                                       sms_application_sid=app_sid)
 
     @patch.object(subprocess, 'call')
     @patch.object(configure.Configure, 'configureHackpack')
@@ -269,71 +273,86 @@ class TwilioTest(ConfigureTest):
         mock_call.return_value = None
         self.configure.host = 'http://look-here-snacky-11211.herokuapp.com'
         self.configure.start()
-        mock_configureHackpack.assert_called_once_with(
-                'http://look-here-snacky-11211.herokuapp.com/voice',
-                'http://look-here-snacky-11211.herokuapp.com/sms',
-                self.configure.app_sid,
-                self.configure.phone_number)
+        m = mock_configureHackpack
+        m.assert_called_once_with('http://look-here-snacky-11211.herokuapp.com'
+                                  '/voice',
+                                  'http://look-here-snacky-11211.herokuapp.com'
+                                  '/sms',
+                                  self.configure.app_sid,
+                                  self.configure.phone_number)
 
     @patch.object(subprocess, 'call')
     @patch.object(configure.Configure, 'configureHackpack')
     @patch.object(configure.Configure, 'getHerokuHostname')
     def test_startWithoutHostname(self, mock_getHerokuHostname,
-            mock_configureHackpack, mock_call):
+                                  mock_configureHackpack, mock_call):
         mock_call.return_value = None
-        mock_getHerokuHostname.return_value = \
-                'http://look-here-snacky-11211.herokuapp.com'
+        mock_getHerokuHostname.return_value = 'http://look-here-snacky-11211' \
+                                              '.herokuapp.com'
         self.configure.start()
-        mock_configureHackpack.assert_called_once_with(
-                'http://look-here-snacky-11211.herokuapp.com/voice',
-                'http://look-here-snacky-11211.herokuapp.com/sms',
-                self.configure.app_sid,
-                self.configure.phone_number)
+        m = mock_configureHackpack
+        m.assert_called_once_with('http://look-here-snacky-11211.herokuapp.com'
+                                  '/voice',
+                                  'http://look-here-snacky-11211.herokuapp.com'
+                                  '/sms',
+                                  self.configure.app_sid,
+                                  self.configure.phone_number)
 
 
 class HerokuTest(ConfigureTest):
     def test_getHerokuHostname(self):
-        test = self.configure.getHerokuHostname(
-                git_config_path='./tests/test_assets/good_git_config')
+        test = self.configure.getHerokuHostname(git_config_path='./tests'
+                                                                '/test_assets'
+                                                                '/good_git_'
+                                                                'config')
         self.assertEquals(test, 'http://look-here-snacky-11211.herokuapp.com')
 
     def test_getHerokuHostnameNoSuchFile(self):
         self.assertRaises(configure.ConfigurationError,
-                self.configure.getHerokuHostname,
-                git_config_path='/tmp')
+                          self.configure.getHerokuHostname,
+                          git_config_path='/tmp')
 
     def test_getHerokuHostnameNoHerokuRemote(self):
         self.assertRaises(configure.ConfigurationError,
-                self.configure.getHerokuHostname,
-                git_config_path='./tests/test_assets/bad_git_config')
+                          self.configure.getHerokuHostname,
+                          git_config_path='./tests/test_assets/bad_git_config')
 
     @patch.object(subprocess, 'call')
     def test_setHerokuEnvironmentVariables(self, mock_call):
         mock_call.return_value = None
-        self.configure.setHerokuEnvironmentVariables(
-                TWILIO_ACCOUNT_SID=self.configure.account_sid,
-                TWILIO_AUTH_TOKEN=self.configure.auth_token,
-                TWILIO_APP_SID=self.configure.app_sid,
-                TWILIO_CALLER_ID=self.configure.phone_number)
-        mock_call.assert_called_once_with(["heroku", "config:add",
-                '%s=%s' % ('TWILIO_ACCOUNT_SID', self.configure.account_sid),
-                '%s=%s' % ('TWILIO_CALLER_ID', self.configure.phone_number),
-                '%s=%s' % ('TWILIO_AUTH_TOKEN', self.configure.auth_token),
-                '%s=%s' % ('TWILIO_APP_SID', self.configure.app_sid)])
+        configuration = {'TWILIO_ACCOUNT_SID': self.configure.account_sid,
+                         'TWILIO_AUTH_TOKEN': self.configure.auth_token,
+                         'TWILIO_APP_SID': self.configure.app_sid,
+                         'TWILIO_CALLER_ID': self.configure.phone_number}
+
+        self.configure.setHerokuEnvironmentVariables(**configuration)
+        args, kwargs = mock_call.call_args
+        self.assertTrue("heroku" in args[0],
+                        "Heroku toolbelt not present in call: "
+                        "{}".format(args[0]))
+        self.assertTrue("config:add" in args[0],
+                        "Config:add not present in call: "
+                        "{}".format(args[0]))
+
+        config = ["{}={}".format(k, v) for k, v in configuration.items()]
+        for item in config:
+            self.assertTrue(item in args[0],
+                            "Missing config from call_args: {} Instead got: "
+                            "{}".format(item, args[0]))
 
 
 class MiscellaneousTest(unittest.TestCase):
     def test_configureWithoutAccountSid(self):
         test = configure.Configure(account_sid=None, auth_token=None,
-                phone_number=None, app_sid=None)
+                                   phone_number=None, app_sid=None)
         self.assertRaises(configure.ConfigurationError,
-                test.start)
+                          test.start)
 
     def test_configureWithoutAuthToken(self):
         test = configure.Configure(account_sid='ACxxxxxxx', auth_token=None,
-                phone_number=None, app_sid=None)
+                                   phone_number=None, app_sid=None)
         self.assertRaises(configure.ConfigurationError,
-                test.start)
+                          test.start)
 
 
 class InputTest(ConfigureTest):
@@ -348,27 +367,27 @@ class InputTest(ConfigureTest):
         # Mock our input
         configure.raw_input = Mock()
         configure.raw_input.return_value = 'wtf'
-        
+
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
-                self.configure.createNewTwiMLApp, self.configure.voice_url,
-                self.configure.sms_url)
-        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did " \
-                "not appear three times, instead: %i" %
-                configure.raw_input.call_count)
+                          self.configure.createNewTwiMLApp,
+                          self.configure.voice_url,
+                          self.configure.sms_url)
+        count = configure.raw_input.call_count
+        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did "
+                        "not appear three times, instead: %i".format(count))
         self.assertFalse(self.configure.client.applications.create.called,
-            "Unexpected request to create AppSid made.")
+                         "Unexpected request to create AppSid made.")
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_purchasePhoneNumberWtfInput(self, MockPhoneNumbers,
-            MockPhoneNumber):
+                                         MockPhoneNumber):
         # Mock the PhoneNumbers resource and its search and purchase methods
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.purchase = \
-                mock_phone_number
+        self.configure.client.phone_numbers.purchase = mock_phone_number
 
         # Mock our input.
         configure.raw_input = Mock()
@@ -376,23 +395,23 @@ class InputTest(ConfigureTest):
 
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
-                self.configure.purchasePhoneNumber)
-        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did " \
-                "not appear three times, instead: %i" %
-                configure.raw_input.call_count)
+                          self.configure.purchasePhoneNumber)
+        self.assertTrue(configure.raw_input.call_count == 3, "Prompt did "
+                        "not appear three times, instead: %i" %
+                        configure.raw_input.call_count)
         self.assertFalse(self.configure.client.phone_numbers.purchase.called,
-                "Unexpected request to create AppSid made.")
+                         "Unexpected request to create AppSid made.")
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
     def test_purchasePhoneNumberWtfInputConfirm(self,
-            MockPhoneNumbers, MockPhoneNumber):
+                                                MockPhoneNumbers,
+                                                MockPhoneNumber):
         # Mock the PhoneNumbers resource and its search and purchase methods
         mock_phone_number = MockPhoneNumber.return_value
         mock_phone_number.phone_number = self.configure.phone_number
         self.configure.client.phone_numbers = MockPhoneNumbers.return_value
-        self.configure.client.phone_numbers.purchase = \
-                mock_phone_number
+        self.configure.client.phone_numbers.purchase = mock_phone_number
 
         # Mock our input.
         configure.raw_input = Mock()
@@ -400,9 +419,9 @@ class InputTest(ConfigureTest):
 
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
-                self.configure.purchasePhoneNumber)
-        self.assertTrue(configure.raw_input.call_count == 4, "Prompt did " \
-                "not appear three times, instead: %i" %
-                configure.raw_input.call_count)
+                          self.configure.purchasePhoneNumber)
+        self.assertTrue(configure.raw_input.call_count == 4, "Prompt did "
+                        "not appear three times, instead: %i" %
+                        configure.raw_input.call_count)
         self.assertFalse(self.configure.client.phone_numbers.purchase.called,
-                "Unexpectedly requested phone number purchase.")
+                         "Unexpectedly requested phone number purchase.")

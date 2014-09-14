@@ -2,16 +2,16 @@
 
 from setuptools import setup
 setup(name='hackpack',
-      version='1.0',
-      author='twilio',
+      version='2.0',
+      author='Rob Spectre',
       author_email='help@twilio.com',
-      description='twilio heroku hackpack',
+      description='A sample project for deploying Twilio to Heroku with Flask',
       include_package_data=True,
       zip_safe=False,
-      packages=['hackpack'],
+      packages=['hackpack', 'tests'],
+      license='MIT',
       install_requires=[
-        'flask>=0.9',
-        'twilio>=3.4.3',
-        'mock>=0.8.0',
-        'nose>=1.1.2',
+          'flask>=0.10',
+          'twilio>=3.6',
+          'tox>=1.7'
       ])

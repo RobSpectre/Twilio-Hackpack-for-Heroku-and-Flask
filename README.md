@@ -26,8 +26,9 @@ Look at all these crazy features!
   and usage a breeze.
 * Boilerplate - All the Flask app boilerplate with example Voice and SMS 
   Request URLs ready for use on Twilio.
-* Testing - Easy base class for unit testing with example tests, nose ready.
+* Testing - Easy base class for unit testing with example tests, tox ready.
 * PEP8 - It's good for you!
+* Python 2 and 3 - It's better for you!
 
 
 ## Usage
@@ -35,6 +36,8 @@ Look at all these crazy features!
 This hackpack ships with two ready-to-go endpoints for your Twilio Voice and SMS
 apps.  The two routes /voice and /sms contain two examples you can modify
 easily.
+
+To start tweaking your hackpack, just edit `hackpack/app.py`.
 
 For example, here is a quick Twilio Voice app that plays some Ramones.
 
@@ -282,6 +285,8 @@ hackpack.
 * [Zachary
   Woase](http://zacharyvoase.com/) - [Twilio signature
   validation](https://github.com/RobSpectre/Twilio-Hackpack-for-Heroku-and-Flask/pull/7) for production branch.
+* [Kevin Burke](http://www.twentymilliseconds.com/) - Better FTU for Twilio
+  Client.
 
 
 [![githalytics.com

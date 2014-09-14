@@ -1,7 +1,14 @@
-from functools import wraps
 import os
+import signal
 
 from hackpack.app import app
+
+
+def graceful_shutdown(signum, frame):
+    exit()
+
+# Restarts Dyno gracefully so there is no error on shutdown.
+signal.signal(signal.SIGTERM, graceful_shutdown)
 
 # If PORT not specified by environment, assume development config.
 if __name__ == '__main__':

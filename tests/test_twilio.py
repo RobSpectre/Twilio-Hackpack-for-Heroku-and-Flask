@@ -38,11 +38,12 @@ class TwiMLTest(unittest.TestCase):
             abs_url = 'http://{0}{1}'.format(app.config['SERVER_NAME'], url)
             signature = self.validator.compute_signature(abs_url, params)
             return self.app.post(url, data=params,
-                                headers={'X-Twilio-Signature': signature})
+                                 headers={'X-Twilio-Signature': signature})
         return self.app.post(url, data=params)
 
     def call(self, url='/voice', to=app.config['TWILIO_CALLER_ID'],
-             from_='+15558675309', digits=None, extra_params=None):
+             from_='+15558675309', digits=None, extra_params=None,
+             signed=True):
         params = {
             'CallSid': 'CAtesting',
             'AccountSid': app.config['TWILIO_ACCOUNT_SID'],
@@ -62,7 +63,7 @@ class TwiMLTest(unittest.TestCase):
             abs_url = 'http://{0}{1}'.format(app.config['SERVER_NAME'], url)
             signature = self.validator.compute_signature(abs_url, params)
             return self.app.post(url, data=params,
-                                headers={'X-Twilio-Signature': signature})
+                                 headers={'X-Twilio-Signature': signature})
         return self.app.post(url, data=params)
 
 

@@ -22,6 +22,7 @@ Deploy to custom domain:
 '''
 
 from argparse import ArgumentParser
+import sys
 import subprocess
 import logging
 
@@ -38,7 +39,8 @@ class Configure(object):
                  phone_number=local_settings.TWILIO_CALLER_ID,
                  voice_url='/voice',
                  sms_url='/sms',
-                 host=None, **kwargs):
+                 host=None,
+                 logger=None, **kwargs):
         self.account_sid = account_sid
         self.auth_token = auth_token
         self.app_sid = app_sid
@@ -47,10 +49,11 @@ class Configure(object):
         self.voice_url = voice_url
         self.sms_url = sms_url
         self.friendly_phone_number = None
+        self.logger = logger or logging.getLogger(__name__)
 
     def start(self):
-        logging.info("Configuring your Twilio hackpack...")
-        logging.debug("Checking if credentials are set...")
+        self.logger.info("Configuring your Twilio hackpack...")
+        self.logger.debug("Checking if credentials are set...")
         if not self.account_sid:
             raise ConfigurationError("ACCOUNT_SID is not set in "
                                      "local_settings.")
@@ -58,23 +61,24 @@ class Configure(object):
             raise ConfigurationError("AUTH_TOKEN is not set in "
                                      "local_settings.")
 
-        logging.debug("Creating Twilio client...")
+        self.logger.debug("Creating Twilio client...")
         self.client = TwilioRestClient(self.account_sid, self.auth_token)
 
-        logging.debug("Checking if host is set.")
+        self.logger.debug("Checking if host is set.")
         if not self.host:
-            logging.debug("Hostname is not set...")
+            self.logger.debug("Hostname is not set...")
             self.host = self.getHerokuHostname()
 
         # Check if urls are set.
-        logging.debug("Checking if all urls are set.")
+        self.logger.debug("Checking if all urls are set.")
         if "://" not in self.voice_url:
             self.voice_url = self.host + self.voice_url
-            logging.debug("Setting voice_url with host: "
-                          "{0}".format(self.voice_url))
+            self.logger.debug("Setting voice_url with host: "
+                              "{0}".format(self.voice_url))
         if "://" not in self.sms_url:
             self.sms_url = self.host + self.sms_url
-            logging.debug("Setting sms_url with host: {0}".format(self.sms_url))
+            self.logger.debug("Setting sms_url with host: "
+                              " {0}".format(self.sms_url))
 
         if self.configureHackpack(self.voice_url, self.sms_url,
                                   self.app_sid, self.phone_number):
@@ -89,8 +93,8 @@ class Configure(object):
             # Ensure local environment variables are set.
             self.printLocalEnvironmentVariableCommands(**configuration)
 
-            logging.info("Hackpack is now configured.  Call {0} to "
-                         "test!".format(self.friendly_phone_number))
+            self.logger.info("\nHackpack is now configured.  Call {0} to "
+                             "test!".format(self.friendly_phone_number))
         else:
             logging.error("There was an error configuring your hackpack. "
                           "Weak sauce.")
@@ -111,17 +115,18 @@ class Configure(object):
             number = self.retrievePhoneNumber(phone_number)
 
         # Configure phone number to use App Sid.
-        logging.info("Setting {0} to use application sid: "
-                     "{0}".format(number.friendly_name, app.sid))
+        self.logger.info("Setting {0} to use application sid: "
+                         "{0}".format(number.friendly_name, app.sid))
         try:
             self.client.phone_numbers.update(number.sid,
                                              voice_application_sid=app.sid,
                                              sms_application_sid=app.sid)
-            logging.debug("Number set.")
+            self.logger.debug("Number set.")
         except TwilioException as e:
             raise ConfigurationError("An error occurred setting the "
                                      "application sid for "
-                                     "{0}: {1}".format(number.friendly_name, e))
+                                     "{0}: "
+                                     "{1}".format(number.friendly_name, e))
 
         # We're done!
         if number:
@@ -131,7 +136,7 @@ class Configure(object):
                                      "request urls for this hackpack.")
 
     def createNewTwiMLApp(self, voice_url, sms_url):
-        logging.debug("Asking user to create new app sid...")
+        self.logger.debug("Asking user to create new app sid...")
         i = 0
         while True:
             i = i + 1
@@ -140,7 +145,7 @@ class Configure(object):
                                "[y/n]").lower()
             if choice == "y":
                 try:
-                    logging.info("Creating new application...")
+                    self.logger.info("Creating new application...")
                     app = self.client.applications.create(voice_url=voice_url,
                                                           sms_url=sms_url,
                                                           friendly_name="Hack"
@@ -160,7 +165,7 @@ class Configure(object):
             else:
                 logging.error("Please choose yes or no with a 'y' or 'n'")
         if app:
-            logging.info("Application created: {0}".format(app.sid))
+            self.logger.info("Application created: {0}".format(app.sid))
             self.app_sid = app.sid
             return app
         else:
@@ -168,8 +173,8 @@ class Configure(object):
                                      "creating your TwiML application.")
 
     def setAppRequestUrls(self, app_sid, voice_url, sms_url):
-        logging.info("Setting request urls for application sid: "
-                     "{0}".format(app_sid))
+        self.logger.info("Setting request urls for application sid: "
+                         "{0}".format(app_sid))
 
         try:
             app = self.client.applications.update(app_sid, voice_url=voice_url,
@@ -185,23 +190,23 @@ class Configure(object):
                 raise ConfigurationError("An error setting the request URLs "
                                          "occured: {0}".format(e))
         if app:
-            logging.debug("Updated application sid: {0}".format(app.sid))
+            self.logger.debug("Updated application sid: {0}".format(app.sid))
             return app
         else:
             raise ConfigurationError("An unknown error occuring "
                                      "configuring request URLs for app sid.")
 
     def retrievePhoneNumber(self, phone_number):
-        logging.debug("Retrieving phone number: {0}".format(phone_number))
+        self.logger.debug("Retrieving phone number: {0}".format(phone_number))
         try:
-            logging.debug("Getting sid for phone number: "
-                          "{0}".format(phone_number))
+            self.logger.debug("Getting sid for phone number: "
+                              "{0}".format(phone_number))
             number = self.client.phone_numbers.list(phone_number=phone_number)
         except TwilioException as e:
             raise ConfigurationError("An error setting the request URLs "
                                      "occured: {0}".format(e))
         if number:
-            logging.debug("Retrieved sid: {0}".format(number[0].sid))
+            self.logger.debug("Retrieved sid: {0}".format(number[0].sid))
             self.friendly_phone_number = number[0].friendly_name
             return number[0]
         else:
@@ -209,7 +214,7 @@ class Configure(object):
                                      "number: {0}".format(phone_number))
 
     def purchasePhoneNumber(self):
-        logging.debug("Asking user to purchase phone number...")
+        self.logger.debug("Asking user to purchase phone number...")
 
         i = 0
         while True:
@@ -228,7 +233,7 @@ class Configure(object):
             else:
                 logging.error("Please choose yes or no with a 'y' or 'n'")
 
-        logging.debug("Confirming purchase...")
+        self.logger.debug("Confirming purchase...")
         i = 0
         while True:
             i = i + 1
@@ -238,11 +243,11 @@ class Configure(object):
                                "[y/n]").lower()
             if choice == "y":
                 try:
-                    logging.debug("Purchasing phone number...")
+                    self.logger.debug("Purchasing phone number...")
                     number = self.client.phone_numbers.purchase(area_code="6"
                                                                           "46")
-                    logging.debug("Phone number purchased: "
-                                  "{0}".format(number.friendly_name))
+                    self.logger.debug("Phone number purchased: "
+                                      "{0}".format(number.friendly_name))
                     break
                 except TwilioException as e:
                     raise ConfigurationError("Your Twilio app couldn't "
@@ -257,8 +262,8 @@ class Configure(object):
 
         # Return number or error out.
         if number:
-            logging.debug("Returning phone number: "
-                          "{0}".format(number.friendly_name))
+            self.logger.debug("Returning phone number: "
+                              "{0}".format(number.friendly_name))
             self.phone_number = number.phone_number
             self.friendly_phone_number = number.friendly_name
             return number
@@ -267,27 +272,27 @@ class Configure(object):
                                      "your phone number.")
 
     def getHerokuHostname(self, git_config_path='./.git/config'):
-        logging.debug("Getting hostname from git configuration file: "
-                      "{0}".format(git_config_path))
+        self.logger.debug("Getting hostname from git configuration file: "
+                          "{0}".format(git_config_path))
         # Load git configuration
         try:
-            logging.debug("Loading git config...")
+            self.logger.debug("Loading git config...")
             git_config = open(git_config_path).readlines()
         except IOError as e:
             raise ConfigurationError("Could not find .git config.  Does it "
                                      "still exist? Failed path: {0}".format(e))
 
-        logging.debug("Finding Heroku remote in git configuration...")
+        self.logger.debug("Finding Heroku remote in git configuration...")
         subdomain = None
         for line in git_config:
             if "git@heroku.com" in line:
                 s = line.split(":")
                 subdomain = s[1].replace('.git', '')
-                logging.debug("Heroku remote found: {0}".format(subdomain))
+                self.logger.debug("Heroku remote found: {0}".format(subdomain))
 
         if subdomain:
             host = "http://{0}.herokuapp.com".format(subdomain.strip())
-            logging.debug("Returning full host: {0}".format(host))
+            self.logger.debug("Returning full host: {0}".format(host))
             return host
         else:
             raise ConfigurationError("Could not find Heroku remote in "
@@ -295,15 +300,14 @@ class Configure(object):
                                      "created the Heroku app?")
 
     def printLocalEnvironmentVariableCommands(self, **kwargs):
-        logging.info("Copy/paste these commands to set your local "
-                     "environment to use this hackpack...")
-        print("\n")
+        self.logger.info("Copy/paste these commands to set your local "
+                         "environment to use this hackpack...\n")
         for k, v in kwargs.items():
             if v:
-                print("export {0}={1}\n".format(k, v))
+                self.logger.info("export {0}={1}".format(k, v))
 
     def setHerokuEnvironmentVariables(self, **kwargs):
-        logging.info("Setting Heroku environment variables...")
+        self.logger.info("Setting Heroku environment variables...")
         envvars = ["{0}={1}".format(k, v) for k, v in kwargs.items() if v]
         envvars.insert(0, "heroku")
         envvars.insert(1, "config:add")
@@ -312,74 +316,82 @@ class Configure(object):
 
 class ConfigurationError(Exception):
     def __init__(self, message):
-        #Exception.__init__(self, message)
-        logging.error(message)
+        logger = logging.getLogger(__name__)
+        logger.error(message)
 
 
-# Logging configuration
-logging.basicConfig(level=logging.INFO, format='%(message)s')
+def parse_args(args):
+    """ Configures the command line interface.
 
-# Parser configuration
-parser = ArgumentParser(description="Twilio Hackpack Configurator - an "
-                                    "easy way to configure your hackpack!",
-                        epilog="Written by Rob Spectre.\n "
-                               "http://www.brooklynhacker.com")
-parser.add_argument("-S", "--account_sid", default=None,
-                    help="Use a specific Twilio ACCOUNT_SID.")
-parser.add_argument("-K", "--auth_token", default=None,
-                    help="Use a specific Twilio AUTH_TOKEN.")
-parser.add_argument("-n", "--new", default=False, action="store_true",
-                    help="Purchase new Twilio phone number and configure "
-                         "app to use your hackpack.")
-parser.add_argument("-N", "--new_app", default=False, action="store_true",
-                    help="Create a new TwiML application sid to use for your "
-                         "hackpack.")
-parser.add_argument("-a", "--app_sid", default=None,
-                    help="Configure specific AppSid to use your hackpack.")
-parser.add_argument("-#", "--phone-number", default=None,
-                    help="Configure specific Twilio number to use your "
-                         "hackpack.")
-parser.add_argument("-v", "--voice_url", default=None,
-                    help="Set the route for your Voice Request URL: "
-                         "(e.g. '/voice').")
-parser.add_argument("-s", "--sms_url", default=None,
-                    help="Set the route for your SMS Request URL: "
-                         "(e.g. '/sms').")
-parser.add_argument("-d", "--domain", default=None,
-                    help="Set a custom domain.")
-parser.add_argument("-D", "--debug", default=False,
-                    action="store_true", help="Turn on debug output.")
+    Args:
+        Arguments from command (usually sys.argv)
 
-
-def main():
-    # Configurator configuration :)
+    Returns:
+        ArgumentParser object
+    """
+    parser = ArgumentParser(description="Twilio Hackpack Configurator - an "
+                                        "easy way to configure your hackpack!",
+                            epilog="Written by Rob Spectre.\n "
+                                   "http://www.brooklynhacker.com")
+    parser.add_argument("-S", "--account_sid", default=None,
+                        help="Use a specific Twilio ACCOUNT_SID.")
+    parser.add_argument("-K", "--auth_token", default=None,
+                        help="Use a specific Twilio AUTH_TOKEN.")
+    parser.add_argument("-n", "--new", default=False, action="store_true",
+                        help="Purchase new Twilio phone number and configure "
+                             "app to use your hackpack.")
+    parser.add_argument("-N", "--new_app", default=False, action="store_true",
+                        help="Create a new TwiML application sid to use for "
+                             " your hackpack.")
+    parser.add_argument("-a", "--app_sid", default=None,
+                        help="Configure specific AppSid to use your hackpack.")
+    parser.add_argument("-#", "--phone-number", default=None,
+                        help="Configure specific Twilio number to use your "
+                             "hackpack.")
+    parser.add_argument("-v", "--voice_url", default=None,
+                        help="Set the route for your Voice Request URL: "
+                             "(e.g. '/voice').")
+    parser.add_argument("-s", "--sms_url", default=None,
+                        help="Set the route for your SMS Request URL: "
+                             "(e.g. '/sms').")
+    parser.add_argument("-d", "--domain", default=None,
+                        help="Set a custom domain.")
+    parser.add_argument("-D", "--debug", default=False,
+                        action="store_true", help="Turn on debug output.")
     configure = Configure()
-    parser.parse_args(namespace=configure)
+    parser.parse_args(args, namespace=configure)
 
-    # Options tree
-    if configure.account_sid:
-        configure.account_sid = configure.account_sid
-    if configure.auth_token:
-        configure.auth_token = configure.auth_token
     if configure.new:
         configure.phone_number = None
     if configure.new_app:
         configure.app_sid = None
-    if configure.app_sid:
-        configure.app_sid = configure.app_sid
-    if configure.phone_number:
-        configure.phone_number = configure.phone_number
-    if configure.voice_url:
-        configure.voice_url = configure.voice_url
-    if configure.sms_url:
-        configure.sms_url = configure.sms_url
     if configure.domain:
         configure.host = configure.domain
-    if configure.debug:
-        logging.basicConfig(level=logging.DEBUG,
-                            format='%(levelname)s - %(message)s')
 
-    configure.start()
+    # Configure logger
+    if configure.debug:
+        formatter = logging.Formatter("%(asctime)s - %(name)s - "
+                                      "%(levelname)s - - %(message)s")
+        level = logging.DEBUG
+    else:
+        formatter = logging.Formatter("%(message)s")
+        level = logging.INFO
+
+    logger = logging.getLogger(__name__)
+    handler = logging.StreamHandler()
+    handler.setFormatter(formatter)
+    logger.addHandler(handler)
+    logger.setLevel(level)
+
+    configure.logger = logger
+
+    return configure
 
 if __name__ == "__main__":
-    main()
+    if "configure.py" in sys.argv:
+        configure = parse_args(sys.argv[1:])
+    else:
+        configure = parse_args(sys.argv)
+    configure.logger.debug("Received these command line arguments: "
+                           "{0}".format(sys.argv))
+    configure.start()

@@ -2,8 +2,10 @@ import unittest
 from mock import Mock
 from mock import patch
 import subprocess
+import logging
 
 from twilio.rest import TwilioRestClient
+from twilio.exceptions import TwilioException
 
 from .context import configure
 
@@ -59,6 +61,25 @@ class TwilioTest(ConfigureTest):
                           self.configure.sms_url)
 
     @patch('twilio.rest.resources.Applications')
+    def test_createNewTwiMLAppException(self, MockApps):
+        # Mock the Applications resource and its create method.
+        self.configure.client.applications = MockApps.return_value
+
+        def raiseException(*args, **kwargs):
+            raise TwilioException("Test error.")
+
+        self.configure.client.applications.create.side_effect = raiseException
+
+        # Mock our input .
+        configure.raw_input = lambda _: 'y'
+
+        # Test / Assert
+        self.assertRaises(configure.ConfigurationError,
+                          self.configure.createNewTwiMLApp,
+                          self.configure.voice_url,
+                          self.configure.sms_url)
+
+    @patch('twilio.rest.resources.Applications')
     @patch('twilio.rest.resources.Application')
     def test_setAppSidRequestUrls(self, MockApp, MockApps):
         # Mock the Applications resource and its update method.
@@ -78,6 +99,40 @@ class TwilioTest(ConfigureTest):
                                            sms_url=self.configure.sms_url,
                                            friendly_name='Hackpack for Heroku '
                                                          'and Flask')
+
+    @patch('twilio.rest.resources.Applications')
+    def test_setAppSidRequestUrls404Error(self, MockApps):
+        # Mock the Applications resource and its update method.
+        self.configure.client.applications.update = MockApps()
+
+        def raiseException(*args, **kwargs):
+            raise TwilioException("HTTP ERROR 404.")
+
+        self.configure.client.applications.update.side_effect = raiseException
+
+        # Test
+        self.assertRaises(configure.ConfigurationError,
+                          self.configure.setAppRequestUrls,
+                          self.configure.app_sid,
+                          self.configure.voice_url,
+                          self.configure.sms_url)
+
+    @patch('twilio.rest.resources.Applications')
+    def test_setAppSidRequestUrls500Error(self, MockApps):
+        # Mock the Applications resource and its update method.
+        self.configure.client.applications.update = MockApps()
+
+        def raiseException(*args, **kwargs):
+            raise TwilioException("HTTP ERROR 500.")
+
+        self.configure.client.applications.update.side_effect = raiseException
+
+        # Test
+        self.assertRaises(configure.ConfigurationError,
+                          self.configure.setAppRequestUrls,
+                          self.configure.app_sid,
+                          self.configure.voice_url,
+                          self.configure.sms_url)
 
     @patch('twilio.rest.resources.PhoneNumbers')
     @patch('twilio.rest.resources.PhoneNumber')
@@ -126,6 +181,24 @@ class TwilioTest(ConfigureTest):
 
         # Mock our input.
         configure.raw_input = lambda _: 'n'
+
+        # Test / Assert
+        self.assertRaises(configure.ConfigurationError,
+                          self.configure.purchasePhoneNumber)
+
+    @patch('twilio.rest.resources.PhoneNumbers')
+    def test_purchasePhoneNumberExceptionOnPurchase(self, MockPhoneNumbers):
+        # Mock the PhoneNumbers resource and its search and purchase methods
+        self.configure.client.phone_numbers.purchase = MockPhoneNumbers()
+
+        def raiseException(*args, **kwargs):
+            raise TwilioException("Test error.")
+
+        self.configure.client.phone_numbers.purchase.side_effect = \
+            raiseException
+
+        # Mock our input.
+        configure.raw_input = lambda _: 'y'
 
         # Test / Assert
         self.assertRaises(configure.ConfigurationError,
@@ -266,6 +339,44 @@ class TwilioTest(ConfigureTest):
         update.assert_called_once_with("PN123",
                                        voice_application_sid=app_sid,
                                        sms_application_sid=app_sid)
+
+    @patch('twilio.rest.resources.Applications')
+    @patch('twilio.rest.resources.Application')
+    @patch('twilio.rest.resources.PhoneNumbers')
+    @patch('twilio.rest.resources.PhoneNumber')
+    def test_configureNoPhoneNumberTwilioError(self, MockPhoneNumber,
+                                               MockPhoneNumbers, MockApp,
+                                               MockApps):
+        # Mock the Applications resource and its update method.
+        mock_app = MockApp.return_value
+        mock_app.sid = self.configure.app_sid
+        self.configure.client.applications = MockApps.return_value
+        self.configure.client.applications.update.return_value = \
+            mock_app
+
+        # Mock the PhoneNumbers resource and its list method.
+        mock_phone_number = MockPhoneNumber.return_value
+        mock_phone_number.sid = "PN123"
+        mock_phone_number.friendly_name = "(555) 555-5555"
+        mock_phone_number.phone_number = self.configure.phone_number
+        self.configure.client.phone_numbers = MockPhoneNumbers.return_value
+
+        def raiseException(*args, **kwargs):
+            raise TwilioException("Test error.")
+
+        self.configure.client.phone_numbers.update.side_effect = \
+            raiseException
+
+        # Mock our input.
+        configure.raw_input = lambda _: 'y'
+
+        # Test
+        self.assertRaises(configure.ConfigurationError,
+                          self.configure.configureHackpack,
+                          self.configure.voice_url,
+                          self.configure.sms_url,
+                          self.configure.app_sid,
+                          self.configure.phone_number)
 
     @patch.object(subprocess, 'call')
     @patch.object(configure.Configure, 'configureHackpack')
@@ -425,3 +536,21 @@ class InputTest(ConfigureTest):
                         configure.raw_input.call_count)
         self.assertFalse(self.configure.client.phone_numbers.purchase.called,
                          "Unexpectedly requested phone number purchase.")
+
+
+class CommandLineTest(unittest.TestCase):
+    def test_account_sid(self):
+        parser = configure.parse_args(['-SACxxx'])
+        self.assertEquals(parser.account_sid, 'ACxxx')
+
+    def test_new_phone_number(self):
+        parser = configure.parse_args(['--new'])
+        self.assertEquals(parser.phone_number, None)
+
+    def test_custom_domain(self):
+        parser = configure.parse_args(['-dtwilio.com'])
+        self.assertEquals(parser.host, "twilio.com")
+
+    def test_debug(self):
+        parser = configure.parse_args(['-D'])
+        self.assertTrue(parser.logger.level, logging.DEBUG)

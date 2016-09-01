@@ -125,6 +125,7 @@ def validate_twilio_request():
     if 'X-Twilio-Signature' not in request.headers:
         return False
     signature = request.headers['X-Twilio-Signature']
+
     if 'CallSid' in request.form:
         # See: http://www.twilio.com/docs/security#notes
         url = URLObject(url_for('.voice', _external=True)).without_auth()
@@ -134,4 +135,8 @@ def validate_twilio_request():
         url = url_for('.sms', _external=True)
     else:
         return False
-    return validator.validate(url, request.form, signature.encode('UTF-8'))
+
+    if isinstance(signature, bytes):
+        return validator.validate(url, request.form, signature.encode('UTF-8'))
+    else:
+        return validator.validate(url, request.form, signature)
